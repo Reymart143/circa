@@ -111,5 +111,4 @@ class LoginController extends Controller
         ]);
         return redirect()->route('/')->with('success', 'User created successfully.');
     }
->>>>>>> ba3da6ef301860262896a0370b6d45bdf4309bd5
 }
