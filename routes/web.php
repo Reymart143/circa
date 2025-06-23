@@ -13,10 +13,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CashierController;
 use App\Http\Controllers\KitchenController;
 use App\Http\Controllers\CustomerController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\FoodCartController;
->>>>>>> ba3da6ef301860262896a0370b6d45bdf4309bd5
 
     //view Login Page
     Route::get('/', function () {
