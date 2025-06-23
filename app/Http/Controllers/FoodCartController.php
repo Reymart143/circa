@@ -14,6 +14,9 @@ class FoodCartController extends Controller
     {
         //
     }
+    public function customerorder(){
+        return view('customer.orders');
+    }
     public function addToCart(Request $request)
     {
         // For authenticated user. If you're not using auth, we can adjust
