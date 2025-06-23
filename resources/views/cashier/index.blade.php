@@ -72,7 +72,37 @@
       
     </div>
     <div>
-      <a href="" class="btn btn-danger"><i class="fa fa-sign-out-alt"></i> Logout</a>
+     
+           <button id="logoutBtn" class="btn btn-danger"><i class="fa fa-sign-out-alt"></i>Logout</button>
+        
+            <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+        </div>
+        <script>
+            document.getElementById('logoutBtn').addEventListener('click', function (e) {
+                e.preventDefault();
+        
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You will be logged out.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, logout',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true,
+                    buttonsStyling: false,
+                    customClass: {
+                        confirmButton: 'btn btn-success mx-2', 
+                        cancelButton: 'btn btn-danger mx-2'    
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('logoutForm').submit();
+                    }
+                });
+            });
+        </script>
     </div>
   </div>
 <div class="row mb-2 mt-2">

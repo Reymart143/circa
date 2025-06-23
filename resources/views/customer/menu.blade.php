@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   {{-- <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet"> --}}
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <!-- Vendor CSS Files -->
   <link href="assetsUsers/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="assetsUsers/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
@@ -141,12 +141,45 @@
            --}}
           {{-- <li><a href="#contact">Contact</a></li> --}}
         </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        <i class="mobile-nav-toggle d-xl-none"></i>
       </nav>
 
       {{-- <a class="btn-getstarted" href="index.html#book-a-table">Book a Table</a> --}}
+           
 
     </div>
+     @if(Auth::check())
+              <button id="logoutBtn" class="btn btn-danger">Logout</button>
+                                                                
+                  <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
+                      @csrf
+                  </form>
+             
+              <script>
+                  document.getElementById('logoutBtn').addEventListener('click', function (e) {
+                      e.preventDefault();
+              
+                      Swal.fire({
+                          title: 'Are you sure?',
+                          text: "You will be logged out.",
+                          icon: 'warning',
+                          showCancelButton: true,
+                          confirmButtonText: 'Yes, logout',
+                          cancelButtonText: 'Cancel',
+                          reverseButtons: true,
+                          buttonsStyling: false,
+                          customClass: {
+                              confirmButton: 'btn btn-success mx-2', 
+                              cancelButton: 'btn btn-danger mx-2'    
+                          }
+                      }).then((result) => {
+                          if (result.isConfirmed) {
+                              document.getElementById('logoutForm').submit();
+                          }
+                      });
+                  });
+              </script>
+        @endif
   </header>
 
   <main class="main">
@@ -244,24 +277,88 @@
     </style>
 
   <div class="container">
+    <style>
+      .category-wrapper {
+  white-space: nowrap;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
 
-     <div class="category-wrapper">
-        <ul class="category-scroll">
-          <li class="category-item">
-            <a href="#" class="category-tab active" data-category="all">
-              <h4>All</h4>
-            </a>
-          </li>
-          @foreach ($categories as $cat)
-            <li class="category-item">
-              <a href="#" class="category-tab" data-category="{{ $cat->id }}">
-                <h4>{{ $cat->category_name }}</h4>
-                {{-- <h6 class="text-success">{{ $cat->category_details }}</h6> --}}
-              </a>
-            </li>
-          @endforeach
-        </ul>
-      </div>
+.category-scroll {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.category-item {
+  display: inline-block;
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.category-tab {
+  text-decoration: none;
+  color: #444;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.category-tab.active .circle-tab {
+  border: 3px solid #ff5c5c;
+  transform: scale(1.1);
+}
+
+.circle-tab {
+  width: 70px;
+  height: 70px;
+  background-color: #fff;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 5px;
+  border: 2px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.circle-tab img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.category-tab:hover .circle-tab {
+  transform: scale(1.1);
+  border-color: #ff5c5c;
+}
+
+    </style>
+  <div class="category-wrapper px-2 mt-4">
+    <ul class="category-scroll d-flex gap-3 overflow-auto flex-nowrap">
+      <li class="category-item text-center">
+        <a href="#" class="category-tab active" data-category="all">
+          <div class="circle-tab">
+            <img src="{{ $logoPath }}" alt="All">
+          </div>
+          <small>All</small>
+        </a>
+      </li>
+      @foreach ($categories as $cat)
+        <li class="category-item text-center">
+          <a href="#" class="category-tab" data-category="{{ $cat->id }}">
+            <div class="circle-tab">
+              <img  src="{{ $logoPath }}" alt="{{ $cat->category_name }}">
+            </div>
+            <small>{{ $cat->category_name }}</small>
+          </a>
+        </li>
+      @endforeach
+    </ul>
+  </div>
+
 
 
        

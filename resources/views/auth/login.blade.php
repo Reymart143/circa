@@ -155,6 +155,7 @@
                                             </div>
                                         </div>
                                         <div class="float-right">
+                                            <a href="/menu" class="btn btn-shadow btn-gradient-info btn-lg"> back to Menu</a>
                                             <button class="btn btn-shadow btn-gradient-primary btn-lg" type="submit">Log in</button>
                                         </div>
                                     </form>
