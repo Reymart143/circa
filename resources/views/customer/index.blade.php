@@ -72,7 +72,6 @@
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-      <a class="btn-getstarted" href="index.html#book-a-table">Book a Table</a>
 
       <a class="btn-getstarted" href="/login">Login</a>
 
@@ -90,7 +89,7 @@
             <h1 data-aos="fade-up">Enjoy Your Healthy<br>Delicious Food</h1>
             <p data-aos="fade-up" data-aos-delay="100">We are team of talented designers making websites with Bootstrap</p>
             <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
-              <a href="/menu" class="btn-get-started">MENU</a>
+              <a href="/menu" class="btn-get-started">Start Order</a>
 
               <a href="/register" class="btn btn-primary" style="margin-left:2%;border-radius:5mm">Create Account</a>
 

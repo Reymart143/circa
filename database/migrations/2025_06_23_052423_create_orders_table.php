@@ -13,14 +13,18 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('product_id')->nullable();
-            $table->string('customer_name')->nullable();
-            $table->string('address')->nullable();
-            $table->string('phone_no')->nullable();
+
+            $table->string('food_id')->nullable();
+            $table->string('table_no')->nullable();
+            $table->string('user_id')->nullable();
             $table->string('quantity')->nullable();
-            $table->string('transaction_no')->nullable();
-            $table->double('total_amount',10,2)->nullable();
-            $table->integer('status')->default(0);
+            $table->string('flavor')->nullable();
+            $table->string('size')->nullable();
+            $table->string('order_no')->nullable();
+            $table->double('total_price',10,2)->nullable();
+            $table->double('customer_amount',10,2)->nullable();
+            $table->integer('payment_status')->default(0);
+            $table->integer('kitchen_status')->default(0);
             $table->timestamps();
         });
     }

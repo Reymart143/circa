@@ -132,14 +132,14 @@
 
       <nav id="navmenu" class="navmenu">
         <ul class="text-white" >
-          <li><a href="/circa" class="active">Home<br></a></li>
+          {{-- <li><a href="/circa" class="active">Home<br></a></li>
           <li><a href="#about">About</a></li>
-          <li><a href="#menu">Menu</a></li>
+          <li><a href="#menu">Menu</a></li> --}}
           {{-- <li><a href="#events">Events</a></li> --}}
           {{-- <li><a href="#chefs">Chefs</a></li>
           <li><a href="#gallery">Gallery</a></li>
            --}}
-          <li><a href="#contact">Contact</a></li>
+          {{-- <li><a href="#contact">Contact</a></li> --}}
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -168,7 +168,9 @@
             </div>
         @endif
 
-        <a href="/yourorders" class="btn btn-warning" style="font-weight: bold; padding: 10px 20px;margin-right:2%">Your Order</a>
+       <button class="btn btn-warning" style="font-weight: bold; padding: 10px 20px;margin-right:2%"  data-bs-toggle="modal" data-bs-target="#orderModal">
+          Your Order
+      </button>
     </div>
 
    
@@ -221,7 +223,7 @@
     }
     </style>
 
-      <div class="container">
+  <div class="container">
 
      <div class="category-wrapper">
         <ul class="category-scroll">
@@ -332,14 +334,172 @@
                         <p class="text-danger fw-bold">₱ {{ number_format($food->price, 2) }}</p>
                       </div>
 
-                       <button class="btn btn-primary add-to-cart" > + </button>
+                       <button class="btn btn-primary add-to-cart" data-id="{{ $food->id }}"> + </button>
                     </div>
                    
                   </div>
                 @endforeach
               </div>
             </div>
-            <script>
+            <style>
+              @media (max-width: 576px) {
+                .modal-body table {
+                  font-size: 13px;
+                }
+                .modal-body h5 {
+                  font-size: 16px;
+                }
+              }
+              </style>  
+
+            <!-- Order Modal -->
+      <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down modal-lg">
+          <div class="modal-content">
+            <div class="modal-header" style="background-color: #5c0000;color:white !important">
+              <h5 class="modal-title text-white" id="orderModalLabel">Your Order</h5>
+           
+            </div>
+            <div class="modal-body">
+              <div id="orderCardsContainer" class="row gy-3"></div>
+              <h5 class="text-end mt-3" >Total: ₱ <span id="orderTotal" style="border: 1px solid #ccc; background-color: #107a29; color: rgb(255, 255, 255); padding: 5px 10px; border-radius: 5px;">0.00</span></h5>
+              <div class="form-group">
+                  <label for="categoryDescription">Your Table Number ?</label>
+                 <select name="table_no" id="table_no" class="form-control">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                 </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close"> Add Order</button>
+              <button type="button" class="btn btn-primary" id="placeOrderBtn">Send to Cashier </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <style>
+      @media (max-width: 576px) {
+        .card {
+          font-size: 12px;
+        }
+      }
+      </style>
+
+
+          <script>
+              let orders = [];
+
+              $(document).on('click', '.add-to-cart', function () {
+                  const productCard = $(this).closest('.product-card');
+                  const id = $(this).data('id');
+                  const name = productCard.find('.product-name').text();
+                  const priceText = productCard.find('.text-danger').text().replace('₱','').trim();
+                  const price = parseFloat(priceText.replace(',',''));
+                  const image = productCard.find('img').attr('src');
+
+                  const size = 'Small';
+                  const flavor = 'Spicy';
+
+                  const existing = orders.find(item => item.id === id);
+                  if (existing) {
+                      existing.quantity += 1;
+                  } else {
+                      orders.push({ id, name, price, quantity: 1, image, size, flavor });
+                  }
+
+                  updateOrderCards();
+              });
+
+              function updateOrderCards() {
+                  let html = '';
+                  let total = 0;
+                  orders.forEach((item, index) => {
+                      const subtotal = item.price * item.quantity;
+                      total += subtotal;
+                      html += `
+                        <div class="col-12 mb-2" data-index="${index}">
+                          <div class="card shadow-sm p-2 d-flex flex-row align-items-start">
+                            <img src="${item.image}" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #ccc;">
+                            <div class="flex-grow-1" style="font-size: 13px;">
+                              <div class="d-flex justify-content-between">
+                                <div><strong>${item.name}</strong></div>
+                                <div>Size: ${item.size}</div>
+                              </div>
+                              <div class="d-flex justify-content-between">
+                                <div>Price: ₱ ${item.price.toFixed(2)}</div>
+                                <div>Flavor: ${item.flavor}</div>
+                              </div>
+                              <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                  <label class="me-2 mb-0">Qty:</label>
+                                  <input type="number" class="form-control quantity-input form-control-sm" value="${item.quantity}" min="1" style="width: 70px;">
+                                </div>
+                                <div style="border: 1px solid #ccc; background-color: #d4edda; color: black; padding: 5px 10px; border-radius: 5px;">
+                                  <strong> ₱ ${subtotal.toFixed(2)}</strong>
+                                </div>
+
+                              </div>
+                              <div class="text-end">
+                                <button class="btn btn-danger btn-sm remove-item mt-1">Remove</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      `;
+                  });
+                  $('#orderCardsContainer').html(html);
+                  $('#orderTotal').text(total.toFixed(2));
+              }
+
+
+
+              // Quantity change
+              $(document).on('change', '.quantity-input', function () {
+                  const index = $(this).closest('.col-12').data('index');
+                  const newQty = parseInt($(this).val());
+                  orders[index].quantity = newQty > 0 ? newQty : 1;
+                  updateOrderCards();
+              });
+
+              // Remove item
+              $(document).on('click', '.remove-item', function () {
+                  const index = $(this).closest('.col-12').data('index');
+                  orders.splice(index, 1);
+                  updateOrderCards();
+              });
+
+              // AJAX Submit
+              $('#placeOrderBtn').on('click', function() {
+                  if (orders.length === 0) {
+                      alert('No orders to submit.');
+                      return;
+                  }
+                  const tableNo = $('#table_no').val(); 
+                  $.ajax({
+                      url: '/submit-order',  
+                      method: 'POST',
+                      data: {
+                          orders: orders,
+                          table_no: tableNo,
+                          _token: '{{ csrf_token() }}' // Pass CSRF token
+                      },
+                      success: function(response) {
+                            window.location.href = response.redirect_url;
+                        },
+                      error: function() {
+                          alert('Failed to submit order.');
+                      }
+                  });
+              });
+
+          </script>
+
+            {{-- <script>
               $(document).on('click', '.add-to-cart', function() {
                 const productId = $(this).data('id');
                 
@@ -361,7 +521,7 @@
                 });
             });
 
-            </script>
+            </script> --}}
             <style>
                 .product-card {
                   background: #fff;
