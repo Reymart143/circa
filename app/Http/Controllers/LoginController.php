@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-<<<<<<< HEAD
-
-=======
 use DB;
 use Illuminate\Support\Facades\Hash;
 >>>>>>> ba3da6ef301860262896a0370b6d45bdf4309bd5
@@ -58,13 +55,11 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();  
-<<<<<<< HEAD
             Session()->put(['isLogin'=>1]);
             return response()->json([
                 'success' => true,
                 'redirect' => route('Dashboard'),
             ]);   
-=======
             if($user->role == 1){
                 Session()->put(['isLogin'=>1]);
                 return response()->json([
@@ -78,8 +73,6 @@ class LoginController extends Controller
                     'redirect' => route('menu'),
                 ]); 
             }
-              
->>>>>>> ba3da6ef301860262896a0370b6d45bdf4309bd5
         }
 
         $user = \App\Models\User::where('username', $request->username)->first();
@@ -99,8 +92,6 @@ class LoginController extends Controller
       
         return view('auth.login');
     }
-<<<<<<< HEAD
-=======
     public function RegisterView(){
         return view('auth.register');
     }
