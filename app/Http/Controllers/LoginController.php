@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use DB;
 use Illuminate\Support\Facades\Hash;
->>>>>>> ba3da6ef301860262896a0370b6d45bdf4309bd5
+
 class LoginController extends Controller
 {
     /*
