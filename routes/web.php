@@ -96,8 +96,6 @@ use App\Http\Controllers\FoodCartController;
     //Customer View
     Route::get('/circa',[CustomerController::class,'homepage']);
 
-    Route::get('/menu',[CustomerController::class,'menu']);
-
     Route::get('/menu',[CustomerController::class,'menu'])->name('menu');
     Route::get('/products-by-category/{categoryId}', [CustomerController::class, 'getProductsByCategory']);
     Route::post('/add-to-cart', [FoodCartController::class, 'addToCart'])->name('cart.add');
