@@ -43,6 +43,7 @@ class UserController extends Controller
             $user->date_birth = $request->date_birth;
             $user->civil_Status = $request->civil_Status;
             $user->gender = $request->gender;
+            $user->role = 2;
             $user->location = $request->location;
             $user->phone_no = $request->phone_no;
             // $user->role = $request->role;

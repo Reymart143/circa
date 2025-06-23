@@ -87,7 +87,8 @@
         <div class="row gy-4 justify-content-center justify-content-lg-between">
           <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
             <h1 data-aos="fade-up">Enjoy Your Healthy<br>Delicious Food</h1>
-            <p data-aos="fade-up" data-aos-delay="100">We are team of talented designers making websites with Bootstrap</p>
+            <p data-aos="fade-up" data-aos-delay="100">Earn rewards with every order!
+Sign in or create your account now to start earning points.</p>
             <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
               <a href="/menu" class="btn-get-started">Start Order</a>
 

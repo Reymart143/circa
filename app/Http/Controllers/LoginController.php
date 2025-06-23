@@ -68,6 +68,13 @@ class LoginController extends Controller
                     'redirect' => route('menu'),
                 ]); 
             }
+            elseif($user->role == 2){
+                Session()->put(['isLogin'=>1]);
+                return response()->json([
+                    'success' => true,
+                    'redirect' => route('cashier'),
+                ]); 
+            }
         }
 
         $user = \App\Models\User::where('username', $request->username)->first();

@@ -166,11 +166,26 @@
                     Hi , <small>{{ Auth::user()->f_name }}</small> 
                 </span>
             </div>
+            @else
+               <span class="description-title" style="
+                    color: #9c1d14;
+                    font-size: 15px;
+                    padding: 10px 20px;
+                    background-color: #f8f9fa;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                    border-radius: 10px;
+                ">
+                    Hi , <small>Guest</small> 
+                </span>
         @endif
 
-       <button class="btn btn-warning" style="font-weight: bold; padding: 10px 20px;margin-right:2%"  data-bs-toggle="modal" data-bs-target="#orderModal">
-          Your Order
+       <button class="btn btn-warning position-relative" style="font-weight: bold; padding: 10px 20px; margin-right:2%" data-bs-toggle="modal" data-bs-target="#orderModal" id="viewOrderButton">
+          View Order
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCountBadge" style="display: none;">
+              0
+          </span>
       </button>
+
     </div>
 
    
@@ -220,6 +235,11 @@
         .section-title {
             padding-top: 30px;
         }
+    }
+    .fly-image {
+        position: absolute;
+        z-index: 9999;
+        transition: transform 1s ease-in-out, opacity 1s;
     }
     </style>
 
@@ -392,36 +412,66 @@
 
 
           <script>
-              let orders = [];
+             let orders = [];
 
-              $(document).on('click', '.add-to-cart', function () {
-                  const productCard = $(this).closest('.product-card');
-                  const id = $(this).data('id');
-                  const name = productCard.find('.product-name').text();
-                  const priceText = productCard.find('.text-danger').text().replace('₱','').trim();
-                  const price = parseFloat(priceText.replace(',',''));
-                  const image = productCard.find('img').attr('src');
+            // Add to cart with fly-to-cart animation
+            $(document).on('click', '.add-to-cart', function () {
+                const button = $(this);
+                const productCard = button.closest('.product-card');
+                const id = button.data('id');
+                const name = productCard.find('.product-name').text();
+                const priceText = productCard.find('.text-danger').text().replace('₱','').trim();
+                const price = parseFloat(priceText.replace(',',''));
+                const image = productCard.find('img').attr('src');
 
-                  const size = 'Small';
-                  const flavor = 'Spicy';
+                const size = 'Small';
+                const flavor = 'Spicy';
 
-                  const existing = orders.find(item => item.id === id);
-                  if (existing) {
-                      existing.quantity += 1;
-                  } else {
-                      orders.push({ id, name, price, quantity: 1, image, size, flavor });
-                  }
+                const existing = orders.find(item => item.id === id);
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    orders.push({ id, name, price, quantity: 1, image, size, flavor });
+                }
 
-                  updateOrderCards();
-              });
+                updateOrderCards();
+                updateCartCount();
 
-              function updateOrderCards() {
-                  let html = '';
-                  let total = 0;
-                  orders.forEach((item, index) => {
-                      const subtotal = item.price * item.quantity;
-                      total += subtotal;
-                      html += `
+                // Fly-to-cart animation
+                const flyImg = $('<img>', {
+                    src: image,
+                    class: 'fly-image',
+                    css: {
+                        width: '80px',
+                        height: '80px',
+                        borderRadius: '10px',
+                        top: productCard.offset().top,
+                        left: productCard.offset().left,
+                        position: 'absolute',
+                        zIndex: 9999,
+                        opacity: 1
+                    }
+                }).appendTo('body');
+
+                const target = $('#viewOrderButton');
+
+                flyImg.css({
+                    transform: `translate(${target.offset().left - productCard.offset().left}px, ${target.offset().top - productCard.offset().top}px) scale(0.1)`,
+                    transition: 'transform 1s ease-in-out, opacity 1s'
+                });
+
+                setTimeout(() => {
+                    flyImg.remove();
+                }, 1000);
+            });
+
+            function updateOrderCards() {
+                let html = '';
+                let total = 0;
+                orders.forEach((item, index) => {
+                    const subtotal = item.price * item.quantity;
+                    total += subtotal;
+                    html += `
                         <div class="col-12 mb-2" data-index="${index}">
                           <div class="card shadow-sm p-2 d-flex flex-row align-items-start">
                             <img src="${item.image}" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #ccc;">
@@ -442,7 +492,6 @@
                                 <div style="border: 1px solid #ccc; background-color: #d4edda; color: black; padding: 5px 10px; border-radius: 5px;">
                                   <strong> ₱ ${subtotal.toFixed(2)}</strong>
                                 </div>
-
                               </div>
                               <div class="text-end">
                                 <button class="btn btn-danger btn-sm remove-item mt-1">Remove</button>
@@ -450,52 +499,62 @@
                             </div>
                           </div>
                         </div>
-                      `;
-                  });
-                  $('#orderCardsContainer').html(html);
-                  $('#orderTotal').text(total.toFixed(2));
-              }
+                    `;
+                });
+                $('#orderCardsContainer').html(html);
+                $('#orderTotal').text(total.toFixed(2));
+                updateCartCount();
+            }
 
+            // Quantity change
+            $(document).on('change', '.quantity-input', function () {
+                const index = $(this).closest('.col-12').data('index');
+                const newQty = parseInt($(this).val());
+                orders[index].quantity = newQty > 0 ? newQty : 1;
+                updateOrderCards();
+            });
 
+            // Remove item
+            $(document).on('click', '.remove-item', function () {
+                const index = $(this).closest('.col-12').data('index');
+                orders.splice(index, 1);
+                updateOrderCards();
+            });
 
-              // Quantity change
-              $(document).on('change', '.quantity-input', function () {
-                  const index = $(this).closest('.col-12').data('index');
-                  const newQty = parseInt($(this).val());
-                  orders[index].quantity = newQty > 0 ? newQty : 1;
-                  updateOrderCards();
-              });
+            // Submit Order
+            $('#placeOrderBtn').on('click', function() {
+                if (orders.length === 0) {
+                    alert('No orders to submit.');
+                    return;
+                }
+                const tableNo = $('#table_no').val(); 
+                $.ajax({
+                    url: '/submit-order',  
+                    method: 'POST',
+                    data: {
+                        orders: orders,
+                        table_no: tableNo,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        window.location.href = response.redirect_url;
+                    },
+                    error: function() {
+                        alert('Failed to submit order.');
+                    }
+                });
+            });
 
-              // Remove item
-              $(document).on('click', '.remove-item', function () {
-                  const index = $(this).closest('.col-12').data('index');
-                  orders.splice(index, 1);
-                  updateOrderCards();
-              });
+            // Update cart count badge
+            function updateCartCount() {
+                let totalCount = orders.reduce((sum, item) => sum + item.quantity, 0);
+                if (totalCount > 0) {
+                    $('#cartCountBadge').text(totalCount).show();
+                } else {
+                    $('#cartCountBadge').hide();
+                }
+            }
 
-              // AJAX Submit
-              $('#placeOrderBtn').on('click', function() {
-                  if (orders.length === 0) {
-                      alert('No orders to submit.');
-                      return;
-                  }
-                  const tableNo = $('#table_no').val(); 
-                  $.ajax({
-                      url: '/submit-order',  
-                      method: 'POST',
-                      data: {
-                          orders: orders,
-                          table_no: tableNo,
-                          _token: '{{ csrf_token() }}' // Pass CSRF token
-                      },
-                      success: function(response) {
-                            window.location.href = response.redirect_url;
-                        },
-                      error: function() {
-                          alert('Failed to submit order.');
-                      }
-                  });
-              });
 
           </script>
 

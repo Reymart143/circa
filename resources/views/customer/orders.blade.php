@@ -60,7 +60,7 @@
 
         <!-- Order Note -->
        <div class="order-card">
-        Note: Please keep this order number to view it to cashier for your payment!
+        Note: Please wait for the staff to get your payment .
        <div class="container-fluid d-flex justify-content-center align-items-center" style="min-height: calc(40vh - 150px); margin-top: 50px;">
             <div class="card shadow text-center p-4" style="max-width: 90%; border: 3px solid #5c0000;">
                 <small>Table No: {{ $table_no }}</small>

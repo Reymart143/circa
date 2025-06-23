@@ -118,12 +118,12 @@
                                                 </div>
                                                 <p><i class="fa fa-envelope"></i> Username: {{ $user->username}}</p>
                                                 <p>Position: 
-                                                    @if($user->role == 0)
+                                                    @if($user->role == 2)
                                                     <span class="badge bg-info" style="font-size:4mm;color:white">Cashier
                                                     </span>
                                                  
                                                     @else
-                                                    <span class="badge bg-success" style="font-size:4mm">Admin
+                                                    <span class="badge bg-success" style="font-size:4mm">Customer
                                                     </span>
                                                     @endif
                                                 </p>

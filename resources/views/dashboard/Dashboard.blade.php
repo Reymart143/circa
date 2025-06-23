@@ -178,7 +178,7 @@
                             <div class="icon-wrapper rounded-circle bg-info text-white mx-auto p-3 custom-widget-icon">
                                 <i class="fa fa-check"></i>
                             </div>
-                            <div class="custom-widget-numbers text-white">{{ $totalpaid= App\Models\Order::where('status',0)->count(); }}</div>
+                            <div class="custom-widget-numbers text-white">{{ $totalpaid= App\Models\Order::where('payment_status',0)->count(); }}</div>
                             <div class="custom-widget-description text-white">Total Paid</div>
                         </div>
                     </div>
@@ -190,7 +190,7 @@
                             <div class="icon-wrapper rounded-circle bg-warning text-white mx-auto p-3 custom-widget-icon">
                                 <i class="fa fa-exclamation"></i>
                             </div>
-                            <div class="custom-widget-numbers text-white">{{ $totalnp = App\Models\Order::where('status',1)->count(); }}</div>
+                            <div class="custom-widget-numbers text-white">{{ $totalnp = App\Models\Order::where('payment_status',1)->count(); }}</div>
                             <div class="custom-widget-description text-white">Total Not Paid</div>
                         </div>
                     </div>

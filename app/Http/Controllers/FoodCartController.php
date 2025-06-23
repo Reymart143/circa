@@ -49,11 +49,10 @@ public function submitOrder(Request $request)
 {
     $orders = $request->input('orders');
     $table_no = $request->input('table_no'); 
-    // Determine user ID
+    
     if (Auth::check()) {
         $user_id = Auth::user()->id;
     } else {
-        // Generate guest ID - example guest001, guest002, etc.
         $lastGuest = DB::table('orders')
                         ->where('user_id', 'like', 'guest%')
                         ->orderBy('user_id', 'desc')
@@ -98,7 +97,6 @@ public function submitOrder(Request $request)
             'updated_at'      => now(),
         ]);
     }
-
         return response()->json([
             'redirect_url' => route('yourorders', ['order_no' => $order_no,'table_no' => $table_no])
         ]);
