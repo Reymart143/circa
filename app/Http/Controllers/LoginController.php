@@ -90,9 +90,7 @@ class LoginController extends Controller
     public function RegisterView(){
         return view('auth.register');
     }
-    public function test(){
-        //
-    }
+
     public function RegisterStore(Request $request){
 
         $user = DB::table('users')->insert([
