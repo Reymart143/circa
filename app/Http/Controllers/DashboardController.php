@@ -11,15 +11,12 @@ class DashboardController extends Controller
 {
     public function Dashboard(){
     if(Auth::check()){
-<<<<<<< HEAD
         // if(Auth::user()->role == 1 || Auth::user()->role == 2){ 
             return view('dashboard.Dashboard');
         // }
-=======
         if(Auth::user()->role == 1){ 
             return view('dashboard.Dashboard');
         }
->>>>>>> ba3da6ef301860262896a0370b6d45bdf4309bd5
         
     }else{
         Auth::logout();
