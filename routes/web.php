@@ -13,6 +13,10 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CashierController;
 use App\Http\Controllers\KitchenController;
 use App\Http\Controllers\CustomerController;
+<<<<<<< HEAD
+=======
+use App\Http\Controllers\FoodCartController;
+>>>>>>> ba3da6ef301860262896a0370b6d45bdf4309bd5
 
     //view Login Page
     Route::get('/', function () {
@@ -27,6 +31,12 @@ use App\Http\Controllers\CustomerController;
         }
         return view('auth.login');
     });
+<<<<<<< HEAD
+=======
+    //Register
+    Route::get('/register', [LoginController::class, 'RegisterView'])->name('register');
+    Route::post('/register.store', [LoginController::class, 'RegisterStore'])->name('register.store');
+>>>>>>> ba3da6ef301860262896a0370b6d45bdf4309bd5
     //Authentication
     Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -90,4 +100,10 @@ use App\Http\Controllers\CustomerController;
     Route::get('/kitchen', [KitchenController::class, 'index'])->name('kitchen');
     //Customer View
     Route::get('/circa',[CustomerController::class,'homepage']);
+<<<<<<< HEAD
     Route::get('/menu',[CustomerController::class,'menu']);
+=======
+    Route::get('/menu',[CustomerController::class,'menu'])->name('menu');
+    Route::get('/products-by-category/{categoryId}', [CustomerController::class, 'getProductsByCategory']);
+    Route::post('/add-to-cart', [FoodCartController::class, 'addToCart'])->name('cart.add');
+>>>>>>> ba3da6ef301860262896a0370b6d45bdf4309bd5

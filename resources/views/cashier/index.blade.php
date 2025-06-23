@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+<<<<<<< HEAD
   <title>Kitchen Display</title>
+=======
+  <title>Cashier Display</title>
+>>>>>>> ba3da6ef301860262896a0370b6d45bdf4309bd5
   {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
       <link rel="stylesheet" href="../assets/css/base.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
