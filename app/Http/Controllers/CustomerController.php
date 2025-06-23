@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-<<<<<<< HEAD
 use App\Models\Customer;
-=======
 use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Product;
->>>>>>> ba3da6ef301860262896a0370b6d45bdf4309bd5
 use Illuminate\Http\Request;
 use DB;
 class CustomerController extends Controller
@@ -22,12 +19,9 @@ class CustomerController extends Controller
     }
     public function menu()
     {
-<<<<<<< HEAD
         $products = DB::table('products')->get();
         return view('customer.menu',compact('products'));
     }
-=======
-   
         $categories = DB::table('categories')->get();
         $products = DB::table('products')->where('status',0)->get();
             //  dd($products,$categories );
@@ -49,7 +43,6 @@ class CustomerController extends Controller
     }
 
 
->>>>>>> ba3da6ef301860262896a0370b6d45bdf4309bd5
     /**
      * Show the form for creating a new resource.
      */
