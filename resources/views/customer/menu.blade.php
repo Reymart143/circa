@@ -24,6 +24,8 @@
   <link href="assetsUsers/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
   <link href="assetsUsers/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <!-- Main CSS File -->
   <link href="assetsUsers/css/main.css" rel="stylesheet">
 </head>
@@ -145,41 +147,16 @@
       </nav>
 
       {{-- <a class="btn-getstarted" href="index.html#book-a-table">Book a Table</a> --}}
-           
+      
 
     </div>
-     @if(Auth::check())
-              <button id="logoutBtn" class="btn btn-danger">Logout</button>
-                                                                
-                  <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
-                      @csrf
-                  </form>
-             
-              <script>
-                  document.getElementById('logoutBtn').addEventListener('click', function (e) {
-                      e.preventDefault();
-              
-                      Swal.fire({
-                          title: 'Are you sure?',
-                          text: "You will be logged out.",
-                          icon: 'warning',
-                          showCancelButton: true,
-                          confirmButtonText: 'Yes, logout',
-                          cancelButtonText: 'Cancel',
-                          reverseButtons: true,
-                          buttonsStyling: false,
-                          customClass: {
-                              confirmButton: 'btn btn-success mx-2', 
-                              cancelButton: 'btn btn-danger mx-2'    
-                          }
-                      }).then((result) => {
-                          if (result.isConfirmed) {
-                              document.getElementById('logoutForm').submit();
-                          }
-                      });
-                  });
-              </script>
-        @endif
+       <button class="btn btn-warning position-relative" style="font-weight: bold; padding: 10px 20px; margin-right:2%" data-bs-toggle="modal" data-bs-target="#orderModal" id="viewOrderButton">
+          View Order
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCountBadge" style="display: none;">
+              0
+          </span>
+      </button>
+   
   </header>
 
   <main class="main">
@@ -212,26 +189,52 @@
                 </span>
         @endif
 
-       <button class="btn btn-warning position-relative" style="font-weight: bold; padding: 10px 20px; margin-right:2%" data-bs-toggle="modal" data-bs-target="#orderModal" id="viewOrderButton">
-          View Order
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCountBadge" style="display: none;">
-              0
-          </span>
-      </button>
+                  @if(Auth::check())
+              <button id="logoutBtn" class="btn btn-danger" style="font-weight: bold; padding: 10px 20px; margin-right:2%"><i class="fa fa-sign-out-alt"></i></button>
+                                                                
+                  <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
+                      @csrf
+                  </form>
+             
+              <script>
+                  document.getElementById('logoutBtn').addEventListener('click', function (e) {
+                      e.preventDefault();
+              
+                      Swal.fire({
+                          title: 'Are you sure?',
+                          text: "You will be logged out.",
+                          icon: 'warning',
+                          showCancelButton: true,
+                          confirmButtonText: 'Yes, logout',
+                          cancelButtonText: 'Cancel',
+                          reverseButtons: true,
+                          buttonsStyling: false,
+                          customClass: {
+                              confirmButton: 'btn btn-success mx-2', 
+                              cancelButton: 'btn btn-danger mx-2'    
+                          }
+                      }).then((result) => {
+                          if (result.isConfirmed) {
+                              document.getElementById('logoutForm').submit();
+                          }
+                      });
+                  });
+              </script>
+        @endif
 
     </div>
 
    
-   <div class="menu-header-wrapper" style="position: relative; text-align: center;">
+   {{-- <div class="menu-header-wrapper" style="position: relative; text-align: center;">
     <img src="{{ asset('assets/images/pic.png') }}" alt="Chef" class="menu-image">
-        <div class="container section-title">
+        <div class="container section-title " >
             <p><span class="description-title">Menu</span></p>
         </div>
-    </div>
+    </div> --}}
 
     <style>
     .menu-header-wrapper {
-        position: relative;
+        position: relative; 
         display: flex;
         justify-content: center;
         align-items: center;
@@ -277,6 +280,7 @@
     </style>
 
   <div class="container">
+    <small class="text-primary">Note: Click the 'View Order' button above for final order !</small>
     <style>
       .category-wrapper {
   white-space: nowrap;
@@ -829,7 +833,7 @@
   <script src="assetsUsers/vendor/glightbox/js/glightbox.min.js"></script>
   <script src="assetsUsers/vendor/purecounter/purecounter_vanilla.js"></script>
   <script src="assetsUsers/vendor/swiper/swiper-bundle.min.js"></script>
-
+  
   <!-- Main JS File -->
   <script src="assetsUsers/js/main.js"></script>
 
