@@ -19,9 +19,6 @@ class CustomerController extends Controller
     }
     public function menu()
     {
-        $products = DB::table('products')->get();
-        return view('customer.menu',compact('products'));
-    }
         $categories = DB::table('categories')->get();
         $products = DB::table('products')->where('status',0)->get();
             //  dd($products,$categories );
