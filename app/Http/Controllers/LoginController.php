@@ -54,12 +54,7 @@ class LoginController extends Controller
         $credentials = $request->only('username', 'password');
 
         if (Auth::attempt($credentials)) {
-            $user = Auth::user();  
-            Session()->put(['isLogin'=>1]);
-            return response()->json([
-                'success' => true,
-                'redirect' => route('Dashboard'),
-            ]);   
+            $user = Auth::user();   
             if($user->role == 1){
                 Session()->put(['isLogin'=>1]);
                 return response()->json([
