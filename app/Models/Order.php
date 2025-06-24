@@ -17,6 +17,7 @@ class Order extends Model
         'total_price',
         'customer_amount',
         'payment_status',
-        'kitchen_status'
+        'kitchen_status',
+        'payment_type'
     ];
 }

@@ -71,14 +71,18 @@
             </style> eMenu Express</h5>
       
     </div>
-    <div>
-     
-           <button id="logoutBtn" class="btn btn-danger"><i class="fa fa-sign-out-alt"></i>Logout</button>
-        
-            <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-            </form>
-        </div>
+    <div class="d-flex justify-content-end align-items-center">
+        <h5 class="mb-0 mr-3">{{ Auth::user()->f_name }}</h5>
+
+        <button id="logoutBtn" class="btn btn-danger">
+            <i class="fa fa-sign-out-alt"></i> Logout
+        </button>
+
+        <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
+    </div>
+
         <script>
             document.getElementById('logoutBtn').addEventListener('click', function (e) {
                 e.preventDefault();
@@ -105,149 +109,146 @@
         </script>
     </div>
   </div>
-<div class="row mb-2 mt-2">
-    <div class="col-md-8">
-        <label for=""> Search by Categories: </label>
-        <span class="badge badge-primary category-filter active" data-category="" 
-              style="cursor: pointer; padding:5mm; border: 2px solid red; border-radius: 10px;">
-            All
-        </span>
-
-        @foreach ($categories as $category)
-            <span class="badge badge-light category-filter" data-category="{{ $category->category_name }}" 
-                  style="cursor: pointer; padding:5mm; border: 2px solid red; border-radius: 10px;">
-                {{ $category->category_name }}    <br> <small>{{ $category->category_details }} </small>
-            </span>
-       
-        @endforeach
-    </div>
-</div>
-
-
-<div class="row shadow border rounded p-2 " >
-    <div class="col-md-8">
-        <div class="row" id="food-container">
-            @foreach ($foods as $food)
-                <div class="col-md-3">
-                   <div class="card shadow-sm mb-4  product-card">
-                      <div class="card-body bg-white">
-                          <div class="d-flex flex-column align-items-center justify-content-center">
-                              <div class="upload-container">
-                                  <img id="avatarImage"
-                                      src="{{ $food->image ? asset($food->image) : $food->image  }}"
-                                      alt="No Picture Upload"
-                                      class="img-fluid avatar-fit">
-                              </div>
-                              <style>
-                                  .avatar-fit {
-                                      width: 160px;
-                                      height: 100px;
-                                      object-fit: cover; 
-                                      border: 2px solid #ccc;
-                                  }
-                                  .product-card {
-                                      transition: transform 0.3s ease, box-shadow 0.3s ease;
-                                  }
-                                  .product-card:hover {
-                                      transform: scale(1.05);
-                                      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-                                  }
-                              </style>
-                          </div> 
-
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title mb-0">Order List</h5>
+                            <button class="btn btn-success" onclick="openModal()"><i class="fa fa-plus"></i>Add Order</button>
+                        </div>
+                        
+                        {{-- <div class="table-responsive"> --}}
+                            {{-- <div class="container mt-4"> --}}
                           
-                                <h5 class="mt-2 text-center">{{ $food->product_name }}</h5>
+                       <div class="row mb-3">
+                        <div class="col-md-3">
+                            <input type="text" id="orderNoInput" class="form-control" placeholder="Search Order No">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" id="tableNoInput" class="form-control" placeholder="Search Table No">
+                        </div>
+                    </div>
 
-                              <!-- Product Price -->
-                              <p class="text-center mb-3">
-                                  <strong> ₱{{ number_format($food->price, 2) }}</strong>
-                              </p>
+                        {{-- </div> --}}
+                        {{-- </div> --}}
 
-                         <!-- Quantity Selector -->
-                          <div class="d-flex justify-content-center align-items-center">
-                              <div class="input-group" style="max-width: 90px; margin-right: 10px;">
-                                  <div class="input-group-prepend">
-                                      <button class="btn btn-danger btn-sm" type="button" onclick="decreaseQuantity(this)">
-                                          <i class="fa fa-minus"></i>
-                                      </button>
-                                  </div>
-                                  <input type="number" name="quantity" value="0" min="0" 
-                                        class="form-control text-center" style="width: 10px; padding: 2px 5px;">
-                                  <div class="input-group-append">
-                                      <button class="btn btn-success btn-sm" type="button" onclick="increaseQuantity(this)">
-                                          <i class="fa fa-plus"></i>
-                                      </button>
-                                  </div>
-                              </div>
+                        <div class="row" id="orders-body">
+                            <!-- Cards will be loaded here -->
+                        </div>
 
-                              <!-- Add to Order Button -->
-                              <button class="btn btn-primary btn-sm" style="max-width: 90px; margin-right: 10px;height:38px">
-                                  <i class="fa fa-check"></i>
-                              </button>
-                          </div>
-
-                      </div>
-                  </div>
-
-                  <script>
-                    function increaseQuantity(button) {
-                        var input = $(button).closest('.input-group').find('input[name="quantity"]');
-                        var current = parseInt(input.val()) || 0;
-                        input.val(current + 1);
-                    }
-                    function decreaseQuantity(button) {
-                        var input = $(button).closest('.input-group').find('input[name="quantity"]');
-                        var current = parseInt(input.val()) || 0;
-                        if (current > 1) {
-                            input.val(current - 1);
+                        <script>
+                        function getStatusText(payment_status) {
+                            if (payment_status == 0) return '<span class="badge badge-warning text-white">Pending</span>';
+                            if (payment_status == 1) return '<span class="badge badge-primary text-white">Paid</span>';
+                            if (payment_status == 2) return '<span class="badge badge-success text-white">Served</span>';
+                            return payment_status;
                         }
-                    }
-                  </script>
+
+                        let allOrders = [];
+
+                        function renderOrders(filteredData) {
+                            $('#orders-body').empty();
+
+                            filteredData.forEach(order => {
+                                let productList = '<ul class="list-group list-group-flush">';
+                                let grandTotal = 0;
+
+                                order.products.forEach(product => {
+                                    grandTotal += parseFloat(product.total_price);
+                                    productList += `<li class="list-group-item d-flex justify-content-between">
+                                        ${product.product_name} <span>${product.quantity}x - ₱${product.total_price.toFixed(2)}</span>
+                                    </li>`;
+                                });
+
+                                productList += `
+                                    <li class="list-group-item d-flex justify-content-between font-weight-bold bg-light">
+                                        Grand Total: <span>₱${grandTotal.toFixed(2)}</span>
+                                    </li>
+                                `;
+                                productList += '</ul>';
+
+                                $('#orders-body').append(`
+                                    <div class="col-md-3 mb-4">
+                                        <div class="card shadow-sm h-90">
+                                            <div class="card-header bg-danger text-white">
+                                                <div><strong>Order No :</strong> ${order.order_no}</div>
+                                               
+                                                <div class="ml-5"><strong>Table No :</strong> ${order.table_no}</div>
+                                            </div>
+                                            <div class="card-body p-2">
+                                                ${productList}
+                                            </div>
+                                            <div class="card-footer d-flex justify-content-between align-items-center">
+                                                ${getStatusText(order.payment_status)}
+                                                <a href="/payorders?order_no=${order.order_no}&table_no=${order.table_no}&user_id=${order.user_id}" class="btn btn-sm btn-success">
+                                                    Pay Order
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `);
+                            });
+                        }
+
+                        function fetchOrders() {
+                            $.ajax({
+                                url: '/fetch-orders',
+                                method: 'GET',
+                                success: function(data) {
+                                    allOrders = data; // store all orders globally
+                                    applyFilter();
+                                }
+                            });
+                        }
+
+                        // Apply filters from both inputs
+                        function applyFilter() {
+                            let orderKeyword = $('#orderNoInput').val().toLowerCase().trim();
+                            let tableKeyword = $('#tableNoInput').val().toLowerCase().trim();
+
+                            let filtered = allOrders.filter(order => {
+                                let matchOrder = orderKeyword === '' || order.order_no.toLowerCase().includes(orderKeyword);
+                                let matchTable = tableKeyword === '' || order.table_no.toString().includes(tableKeyword);
+                                return matchOrder && matchTable;
+                            });
+
+                            renderOrders(filtered);
+                        }
+
+                        // Initial fetch
+                        fetchOrders();
+
+                        // Auto refresh only if both search boxes are empty
+                        setInterval(function() {
+                            let orderKeyword = $('#orderNoInput').val().trim();
+                            let tableKeyword = $('#tableNoInput').val().trim();
+                            if (orderKeyword === '' && tableKeyword === '') {
+                                fetchOrders();
+                            }
+                        }, 3000);
+
+                        // Bind search events
+                        $('#orderNoInput, #tableNoInput').on('input', applyFilter);
+                        </script>
+
+
+
+                        {{-- </div> --}}
+                    </div>
                 </div>
-            @endforeach
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm mb-4">
-            <div class="card-body bg-white">
-                <div class="text-muted mb-2" style="font-size: 12px;"> Orders</div>
-                <input type="text" name="code" id="code" class="form-control" placeholder="Enter Order Code">
-                <h5 class="mt-2 mb-2">Order Summary Here</h5>
-                <button class="btn btn-success btn-sm float-right" style="background-color: rgb(228, 83, 21); color: white;">Place Order</button>
             </div>
         </div>
     </div>
-</div>
-<script>
-$(document).ready(function() {
 
-    $('.category-filter').on('click', function() {
-        $('.category-filter').removeClass('badge-primary').addClass('badge-light');
-        $(this).removeClass('badge-light').addClass('badge-primary');
-
-        var selectedCategory = $(this).data('category');
-
-        $.ajax({
-            url: "{{ route('cashier') }}",
-            type: "GET",
-            data: { category: selectedCategory },
-            success: function(response) {
-                // Only replace the food list, not the full page
-                var newHtml = $(response).find('#food-container').html();
-                $('#food-container').html(newHtml);
-            }
-        });
-    });
-
-});
-
-
-</script>
 
 
 
 </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <!-- DataTables CSS -->
  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">

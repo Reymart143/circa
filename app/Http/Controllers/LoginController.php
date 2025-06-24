@@ -112,6 +112,6 @@ class LoginController extends Controller
             'role'     => '0',
             'password' => Hash::make($request->password),
         ]);
-        return redirect()->route('/')->with('success', 'User created successfully.');
+        return redirect()->route('login')->with('success', 'User created successfully.');
     }
 }

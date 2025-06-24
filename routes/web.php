@@ -27,7 +27,7 @@ use App\Http\Controllers\FoodCartController;
             return redirect()->route('Dashboard');
         }
         return view('auth.login');
-    });
+    })->name('login');
     //Register
     Route::get('/register', [LoginController::class, 'RegisterView'])->name('register');
     Route::post('/register.store', [LoginController::class, 'RegisterStore'])->name('register.store');
@@ -88,8 +88,12 @@ use App\Http\Controllers\FoodCartController;
     Route::post('/appearance/update', [SystemConfigurationController::class, 'appearanceupdate'])->name('appearance/update');
 
     //cashier
+    // Route::get('/cashier', [CashierController::class, 'index'])->name('cashier');
     Route::get('/cashier', [CashierController::class, 'index'])->name('cashier');
-    Route::get('/cashier/filter', [CashierController::class, 'filter'])->name('cashier.filter');
+    Route::get('/fetch-orders', [CashierController::class, 'fetchOrders']);
+    Route::get('/payorders', [CashierController::class, 'payorders'])->name('payorders');
+    // Route::get('/cashier/filter', [CashierController::class, 'filter'])->name('cashier.filter');
+   Route::post('/finalize-order', [CashierController::class, 'finalizeOrder'])->name('finalize.order');
 
     //kitchen
     Route::get('/kitchen', [KitchenController::class, 'index'])->name('kitchen');
