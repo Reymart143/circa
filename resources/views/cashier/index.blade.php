@@ -116,7 +116,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title mb-0">Order List</h5>
-                            <button class="btn btn-success" onclick="openModal()"><i class="fa fa-plus"></i>Add Order</button>
+                            <a class="btn btn-success" onclick="openModal()" href="/payorders"><i class="fa fa-plus"></i>Add Order</a>
                         </div>
                         
                         {{-- <div class="table-responsive"> --}}

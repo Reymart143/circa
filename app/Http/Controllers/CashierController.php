@@ -43,23 +43,67 @@ class CashierController extends Controller
         
         return response()->json($orders);
     }
-    public function payorders(Request $request)
-    {
-        $order_no = $request->query('order_no');
-        $table_no = $request->query('table_no');
-         $user_id = $request->query('user_id');
+    // public function payorders(Request $request)
+    // {
+    //     $order_no = $request->query('order_no');
+    //     $table_no = $request->query('table_no');
+    //      $user_id = $request->query('user_id');
          
-        $categories = DB::table('categories')->get();
-        $foods = DB::table('products')->where('status', 0)->get();
-        $orderItems = DB::table('orders')
-            ->join('products', 'orders.food_id', '=', 'products.id')
-            ->where('order_no', $order_no)
-            ->where('table_no', $table_no)
-            ->select('orders.food_id as product_id', 'products.product_name', 'orders.quantity', 'orders.total_price')
-            ->get();
+    //     $categories = DB::table('categories')->get();
+    //     $foods = DB::table('products')->where('status', 0)->get();
+    //     $orderItems = DB::table('orders')
+    //         ->join('products', 'orders.food_id', '=', 'products.id')
+    //         ->where('order_no', $order_no)
+    //         ->where('table_no', $table_no)
+    //         ->select('orders.food_id as product_id', 'products.product_name', 'orders.quantity', 'orders.total_price')
+    //         ->get();
 
-        return view('cashier.payorder', compact('orderItems', 'order_no', 'table_no', 'categories', 'foods','user_id'));
+    //     return view('cashier.payorder', compact('orderItems', 'order_no', 'table_no', 'categories', 'foods','user_id'));
+    // }
+public function payorders(Request $request)
+{
+    $order_no = $request->query('order_no');
+    $table_no = $request->query('table_no');
+    $user_id = $request->query('user_id');
+
+    if (!$order_no || !$table_no) {
+
+        $lastOrder = DB::table('orders')
+            ->where('order_no', 'like', 'circa%')
+            ->orderBy('order_no', 'desc')
+            ->first();
+
+        if ($lastOrder) {
+            $lastNumber = intval(substr($lastOrder->order_no, 5));  
+            $nextOrderNumber = $lastNumber + 1;
+        } else {
+            $nextOrderNumber = 1;
+        }
+        $order_no = 'circa' . str_pad($nextOrderNumber, 3, '0', STR_PAD_LEFT);
+
+        $occupiedTable = DB::table('orders')
+            ->whereNotIn('kitchen_status', [0, 1])
+            ->orderBy('table_no', 'asc')
+            ->first();
+
+        if ($occupiedTable) {
+            $table_no = $occupiedTable->table_no;
+        } else {
+            $table_no = 1;  
+        }
     }
+
+    $categories = DB::table('categories')->get();
+    $foods = DB::table('products')->where('status', 0)->get();
+    $orderItems = DB::table('orders')
+        ->join('products', 'orders.food_id', '=', 'products.id')
+        ->where('order_no', $order_no)
+        ->where('table_no', $table_no)
+        ->select('orders.food_id as product_id', 'products.product_name', 'orders.quantity', 'orders.total_price')
+        ->get();
+
+    return view('cashier.payorder', compact('orderItems', 'order_no', 'table_no', 'categories', 'foods', 'user_id'));
+}
 
 // public function finalizeOrder(Request $request)
 // {
