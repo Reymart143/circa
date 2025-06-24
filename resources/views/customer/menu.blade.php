@@ -625,7 +625,11 @@
             // Submit Order
             $('#placeOrderBtn').on('click', function() {
                 if (orders.length === 0) {
-                    alert('No orders to submit.');
+                    // alert('No orders to submit.');
+                        Swal.fire({
+                          title: 'No orders to submit',
+                          icon: 'warning',
+                      });
                     return;
                 }
                 const tableNo = $('#table_no').val(); 
