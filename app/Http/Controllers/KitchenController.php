@@ -15,6 +15,57 @@ class KitchenController extends Controller
         return view('kitchen.index');
     }
 
+public function fetchOrders()
+{
+    $grouped = Kitchen::with('food')
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->groupBy('order_no')
+        ->map(function ($items) {
+            return [
+                'order_no' => $items->first()->order_no,
+                'table_no' => $items->first()->table_no,
+                'created_at' => $items->first()->created_at,
+                'kitchen_status' => $items->first()->kitchen_status,
+                'timer' => $items->first()->timer,
+                'items' => $items->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'quantity' => $item->quantity,
+                        'product_name' => $item->food->product_name ?? 'Unknown'
+                    ];
+                })->values()
+            ];
+        })->values();
+
+    return response()->json($grouped);
+}
+
+public function updateStatus(Request $request)
+{
+    $order = Kitchen::find($request->id);
+    if ($order) {
+        Kitchen::where('order_no', $order->order_no)
+            ->update(['kitchen_status' => $request->status]);
+        return response()->json(['success' => true]);
+    }
+    return response()->json(['success' => false]);
+}
+
+
+    public function setTimer(Request $request)
+    {
+        $order = Kitchen::find($request->id);
+        if ($order) {
+            Kitchen::where('order_no', $order->order_no)
+                ->update(['timer' => $request->timer]);
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false]);
+    }
+
+
+
     /**
      * Show the form for creating a new resource.
      */

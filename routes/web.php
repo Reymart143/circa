@@ -97,6 +97,9 @@ use App\Http\Controllers\FoodCartController;
 
     //kitchen
     Route::get('/kitchen', [KitchenController::class, 'index'])->name('kitchen');
+    Route::get('/kitchen/orders', [KitchenController::class, 'fetchOrders']);
+    Route::post('/kitchen/update-status', [KitchenController::class, 'updateStatus']);
+    Route::post('/kitchen/set-timer', [KitchenController::class, 'setTimer']);
     //Customer View
     Route::get('/circa',[CustomerController::class,'homepage']);
     Route::get('/menu',[CustomerController::class,'menu'])->name('menu');

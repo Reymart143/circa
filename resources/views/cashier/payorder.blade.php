@@ -73,7 +73,17 @@
     </div>
     <div>
      
-           <button id="logoutBtn" class="btn btn-danger"><i class="fa fa-sign-out-alt"></i>Logout</button>
+          <div class="d-flex justify-content-end align-items-center">
+        <h5 class="mb-0 mr-3">{{ Auth::user()->f_name }}</h5>
+
+        <button id="logoutBtn" class="btn btn-danger">
+            <i class="fa fa-sign-out-alt"></i> Logout
+        </button>
+
+        <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
+    </div>
         
             <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
                 @csrf
@@ -107,7 +117,7 @@
   </div>
     <div class="container-fluid">
         <div class="row mb-2 mt-2">
-                <div class="col-md-8">
+                <div class="col-md-11">
                     <span class="badge badge-primary category-filter active" style="cursor: pointer; padding:5mm; border: 2px solid red; border-radius: 10px;">
                         All
                     </span>
@@ -118,8 +128,11 @@
                         </span>
                     @endforeach
                 </div>
+                 <div class="col-md-1 ">
+                    <a href="/cashier" class="btn btn-secondary "><i class="fa fa-arrow-left"></i> Orders</a>
+                </div>
             </div>
-
+               
             <div class="row shadow border rounded p-2">
                 <div class="col-md-7">
                     <div class="row" id="food-container">
@@ -149,7 +162,23 @@
                                 <div class="mb-4" style="background: #f8f9fa; padding: 20px; border: 2px solid #ccc; border-radius: 10px;">
                                     <div class="text-center" style="font-size: 36px; font-weight: bold; color: #222;">
                                         Order #: <span style="color: #007bff;">{{ $order_no }}</span> |
-                                        Table #: <span style="color: #28a745;">{{ $table_no }}</span>
+                                        @if($table_no == null)
+                                        
+                                        <label for="table_no">Table #:</label>
+                                        <select name="table_no" id="table_no" class="form-control col-md-4 float-right">
+                                            @for ($i = 1; $i <= 100; $i++)
+                                                <option value="{{ $i }}" {{ $table_no == $i ? 'selected' : '' }}>
+                                                    Table {{ $i }}
+                                                </option>
+                                            @endfor
+                                        </select>
+                                        @else
+                                        Table #: <span style="color: #007bff;">{{ $table_no }}</span>
+                                        @endif
+                                        
+                                        
+                                     
+
                                     </div>
                                 </div>
 
@@ -338,7 +367,7 @@
                         data: {
                             order_no: "{{ $order_no }}",
                             user_id: "{{ $user_id }}",
-                            table_no: "{{ $table_no }}",
+                            table_no: document.getElementById('table_no') ? document.getElementById('table_no').value : "{{ $table_no }}",
                             payment_type: paymentType,
                             customer_amount: customerAmount,
                             discount: discount,

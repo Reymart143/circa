@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('kitchens', function (Blueprint $table) {
             $table->id();
+            $table->string('food_id')->nullable();
+            $table->string('order_no')->nullable();
+            $table->string('table_no')->nullable();
+            $table->string('user_id')->nullable();
+            $table->string('quantity')->nullable();
+            $table->string('timer')->nullable();
+            $table->integer('kitchen_status')->default(0);
             $table->timestamps();
         });
     }

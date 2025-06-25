@@ -17,4 +17,8 @@ class Product extends Model
         'status',
         'image'
     ];
+    public function food()
+    {
+        return $this->belongsTo(\App\Models\Product::class, 'food_id');
+    }
 }

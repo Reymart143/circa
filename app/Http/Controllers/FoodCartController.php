@@ -22,20 +22,16 @@ class FoodCartController extends Controller
     }
     public function addToCart(Request $request)
     {
-        // For authenticated user. If you're not using auth, we can adjust
         $userId = auth()->id(); 
 
-        // Check if already in cart
         $cart = \App\Models\Cart::where('user_id', $userId)
                     ->where('product_id', $request->product_id)
                     ->first();
 
         if ($cart) {
-            // If exists, increment quantity
             $cart->quantity += $request->quantity;
             $cart->save();
         } else {
-            // If not exists, create new cart item
             \App\Models\Cart::create([
                 'user_id' => $userId,
                 'product_id' => $request->product_id,

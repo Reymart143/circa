@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cashier;
+use App\Models\kitchen;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Auth;
+
 class CashierController extends Controller
 {
     /**
@@ -81,18 +83,20 @@ public function payorders(Request $request)
         }
         $order_no = 'circa' . str_pad($nextOrderNumber, 3, '0', STR_PAD_LEFT);
 
-        $occupiedTable = DB::table('orders')
-            ->whereNotIn('kitchen_status', [0, 1])
-            ->orderBy('table_no', 'asc')
-            ->first();
-
-        if ($occupiedTable) {
-            $table_no = $occupiedTable->table_no;
-        } else {
-            $table_no = 1;  
-        }
+        // $occupiedTable = DB::table('kitchens')
+        //     ->whereNotIn('kitchen_status', [1,2,3])
+        //     ->orderBy('table_no', 'asc')
+        //     ->first();
+        // // dd($occupiedTable);
+        // if ($occupiedTable) {
+        //     $table_no = $occupiedTable->table_no;
+        //     //    dd($occupiedTable);
+        // } else {
+         
+        //     $table_no = 1;  
+        // }
     }
-
+    // dd($table_no );
     $categories = DB::table('categories')->get();
     $foods = DB::table('products')->where('status', 0)->get();
     $orderItems = DB::table('orders')
@@ -132,6 +136,75 @@ public function payorders(Request $request)
 //     return response()->json(['success' => true]);
 // }
 
+    // public function finalizeOrder(Request $request)
+    // {
+    //     $orderNo = $request->order_no;
+    //     $tableNo = $request->table_no;
+    //     $userId = $request->user_id;
+    //     $items = $request->items;
+
+    //     $paymentType = $request->payment_type;
+    //     $customerAmount = $request->customer_amount;
+    //     // dd($paymentType, $customerAmount);  
+    //     $existingFoodIds = DB::table('orders')
+    //         ->where('order_no', $orderNo)
+    //         ->where('table_no', $tableNo)
+    //         ->pluck('food_id')
+    //         ->toArray();
+
+    //     $submittedFoodIds = array_column($items, 'productId');
+
+    //     $toDelete = array_diff($existingFoodIds, $submittedFoodIds);
+    //     if (!empty($toDelete)) {
+    //         DB::table('orders')
+    //             ->where('order_no', $orderNo)
+    //             ->where('table_no', $tableNo)
+    //             ->whereIn('food_id', $toDelete)
+    //             ->delete();
+    //     }
+
+    //     foreach ($items as $item) {
+    //         $exists = DB::table('orders')
+    //             ->where('order_no', $orderNo)
+    //             ->where('table_no', $tableNo)
+    //             ->where('food_id', $item['productId'])
+    //             ->exists();
+
+    //         if ($exists) {
+    //             DB::table('orders')
+    //                 ->where('order_no', $orderNo)
+    //                 ->where('table_no', $tableNo)
+    //                 ->where('food_id', $item['productId'])
+    //                 ->update([
+    //                     'quantity' => $item['quantity'],
+    //                     'total_price' => $item['quantity'] * $item['price'],
+    //                     'payment_status' => 1,
+    //                     'kitchen_status' => 1,
+    //                     'payment_type' => $paymentType,
+    //                     'customer_amount' => $customerAmount,
+    //                     'updated_at' => now(),
+    //                 ]);
+    //         } else {
+    //             DB::table('orders')->insert([
+    //                 'order_no' => $orderNo,
+    //                 'table_no' => $tableNo,
+    //                 'food_id' => $item['productId'],
+    //                 'quantity' => $item['quantity'],
+    //                 'total_price' => $item['quantity'] * $item['price'],
+    //                 'user_id' => $userId,
+    //                 'payment_status' => 1,
+    //                 'kitchen_status' => 1,
+    //                 'payment_type' => $paymentType,
+    //                 'customer_amount' => $customerAmount,
+    //                 'created_at' => now(),
+    //                 'updated_at' => now(),
+    //             ]);
+    //         }
+    //     }
+
+    //     return response()->json(['success' => true]);
+    // }
+
 public function finalizeOrder(Request $request)
 {
     $orderNo = $request->order_no;
@@ -141,7 +214,7 @@ public function finalizeOrder(Request $request)
 
     $paymentType = $request->payment_type;
     $customerAmount = $request->customer_amount;
-    // dd($paymentType, $customerAmount);  
+
     $existingFoodIds = DB::table('orders')
         ->where('order_no', $orderNo)
         ->where('table_no', $tableNo)
@@ -154,6 +227,11 @@ public function finalizeOrder(Request $request)
     if (!empty($toDelete)) {
         DB::table('orders')
             ->where('order_no', $orderNo)
+            ->where('table_no', $tableNo)
+            ->whereIn('food_id', $toDelete)
+            ->delete();
+
+        Kitchen::where('order_no', $orderNo)
             ->where('table_no', $tableNo)
             ->whereIn('food_id', $toDelete)
             ->delete();
@@ -196,11 +274,24 @@ public function finalizeOrder(Request $request)
                 'updated_at' => now(),
             ]);
         }
+
+        Kitchen::updateOrCreate(
+            [
+                'order_no' => $orderNo,
+                'table_no' => $tableNo,
+                'food_id' => $item['productId'],
+            ],
+            [
+                'user_id' => $userId,
+                'quantity' => $item['quantity'],
+                'kitchen_status' => 1,
+                'timer' => null, 
+            ]
+        );
     }
 
     return response()->json(['success' => true]);
 }
-
 
 
 
