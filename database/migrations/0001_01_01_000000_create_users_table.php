@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('phone_no')->nullable();
             $table->integer('role')->default(0);
             $table->string('username')->unique();
+            $table->decimal('points')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

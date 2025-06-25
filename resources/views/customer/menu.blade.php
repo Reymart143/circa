@@ -173,7 +173,7 @@
                     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
                     border-radius: 10px;
                 ">
-                    Hi , <small>{{ Auth::user()->f_name }}</small> 
+                    Hi , <small><a href="/userProfile">{{ Auth::user()->f_name }}</a></small> 
                 </span>
             </div>
             @else

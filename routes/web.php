@@ -104,6 +104,7 @@ use App\Http\Controllers\FoodCartController;
     Route::get('/circa',[CustomerController::class,'homepage']);
     Route::get('/menu',[CustomerController::class,'menu'])->name('menu');
     Route::get('/products-by-category/{categoryId}', [CustomerController::class, 'getProductsByCategory']);
+    Route::get('/userProfile',[CustomerController::class,'userProfile']); 
     Route::post('/add-to-cart', [FoodCartController::class, 'addToCart'])->name('cart.add');
     Route::get('/yourorders/{order_no}/{table_no}', [FoodCartController::class, 'customerorder'])->name('yourorders');
     Route::post('/submit-order', [FoodCartController::class, 'submitOrder']);

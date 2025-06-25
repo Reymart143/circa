@@ -175,10 +175,6 @@
                                         @else
                                         Table #: <span style="color: #007bff;">{{ $table_no }}</span>
                                         @endif
-                                        
-                                        
-                                     
-
                                     </div>
                                 </div>
 
@@ -337,7 +333,6 @@
                         alert("Order is empty.");
                         return;
                     }
-
                     let paymentType = $('input[name="payment_type"]:checked').val();
                     let grandTotal = 0;
 
@@ -351,16 +346,14 @@
                     let customerAmount = parseFloat($('#customer_amount').val()) || 0;
                     let change = customerAmount - finalTotal;
 
-                  if (customerAmount < finalTotal) {
+                    if (customerAmount < finalTotal) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Insufficient Amount',
                             text: 'Customer must pay at least ₱' + finalTotal.toFixed(2),
                         });
                         return;
-                }
-
-
+                    }
                     $.ajax({
                         url: "{{ route('finalize.order') }}",
                         method: "POST",
@@ -376,19 +369,26 @@
                             _token: "{{ csrf_token() }}"
                         },
                         success: function(response) {
-                            alert("Order placed successfully!");
+                            // alert("Order placed successfully!");
+                             Swal.fire({
+                                icon: 'success',
+                                title: 'Order Submitted Successfully',
+                                text: 'Order is transferred to the kitchen' ,
+                            });
                             // location.reload();
                              generateReceipt();
                               $('#receiptModal').modal('show');
                         },
                         error: function() {
-                            alert("Failed to place order.");
+                             Swal.fire({
+                                icon: 'error',
+                                title: 'Something went wrong',
+                                text: 'Error placing order, please try again later',
+                            });
                         }
                     });
                 });
                 </script>
-
-
     </div>
 </div>
 <script>

@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use DB;
+use Illuminate\Support\Facades\Auth;
+
 class CustomerController extends Controller
 {
     /**
@@ -38,7 +40,16 @@ class CustomerController extends Controller
         return response()->json($products);
     }
 
+    public function userProfile(){
+        $user = Auth::user();
 
+        $totalOrders = DB::table('orders')
+            ->where('user_id', $user->id)
+            ->where('payment_status',1)
+            ->count();
+
+        return view('customer.userProfile', compact('user', 'totalOrders'));
+    }
     /**
      * Show the form for creating a new resource.
      */
