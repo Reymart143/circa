@@ -26,12 +26,12 @@ class CashierController extends Controller
    public function fetchOrders()
     {
         $orders = DB::table('orders')
-            ->select('order_no', 'table_no', 'payment_status', 'user_id')  // ✅ include user_id
-            ->groupBy('order_no', 'table_no', 'payment_status', 'user_id')
+            ->select('order_no', 'table_no', 'payment_status', 'user_id','order_type')  // ✅ include user_id
+            ->groupBy('order_no', 'table_no', 'payment_status', 'user_id','order_type')
             ->orderBy('order_no', 'desc')
             ->where('payment_status',0)
             ->get();
-
+        
         foreach ($orders as $order) {
             $products = DB::table('orders')
                 ->join('products', 'orders.food_id', '=', 'products.id')
@@ -67,7 +67,8 @@ public function payorders(Request $request)
     $order_no = $request->query('order_no');
     $table_no = $request->query('table_no');
     $user_id = $request->query('user_id');
-
+    $order_type = $request->query('order_type');
+   
     if (!$order_no || !$table_no) {
 
         $lastOrder = DB::table('orders')
@@ -106,7 +107,7 @@ public function payorders(Request $request)
         ->select('orders.food_id as product_id', 'products.product_name', 'orders.quantity', 'orders.total_price')
         ->get();
 
-    return view('cashier.payorder', compact('orderItems', 'order_no', 'table_no', 'categories', 'foods', 'user_id'));
+    return view('cashier.payorder', compact('orderItems', 'order_no', 'table_no', 'categories', 'foods', 'user_id','order_type'));
 }
 
 // public function finalizeOrder(Request $request)
@@ -210,8 +211,9 @@ public function finalizeOrder(Request $request)
     $orderNo = $request->order_no;
     $tableNo = $request->table_no;
     $userId = $request->user_id;
+    $orderType = $request->order_type;
     $items = $request->items;
-
+    // dd($orderType );
     $paymentType = $request->payment_type;
     $customerAmount = $request->customer_amount;
 
@@ -254,6 +256,7 @@ public function finalizeOrder(Request $request)
                     'total_price' => $item['quantity'] * $item['price'],
                     'payment_status' => 1,
                     'kitchen_status' => 1,
+                    'order_type'     => $orderType,
                     'payment_type' => $paymentType,
                     'customer_amount' => $customerAmount,
                     'updated_at' => now(),
@@ -268,6 +271,7 @@ public function finalizeOrder(Request $request)
                 'user_id' => $userId,
                 'payment_status' => 1,
                 'kitchen_status' => 1,
+                'order_type'     => $orderType,
                 'payment_type' => $paymentType,
                 'customer_amount' => $customerAmount,
                 'created_at' => now(),
@@ -279,12 +283,14 @@ public function finalizeOrder(Request $request)
             [
                 'order_no' => $orderNo,
                 'table_no' => $tableNo,
+                 'order_type'  => $orderType,
                 'food_id' => $item['productId'],
             ],
             [
                 'user_id' => $userId,
                 'quantity' => $item['quantity'],
                 'kitchen_status' => 1,
+                'order_type'     => $orderType,
                 'timer' => null, 
             ]
         );

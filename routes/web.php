@@ -7,7 +7,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SystemConfigurationController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CashierController;
@@ -59,12 +58,6 @@ use App\Http\Controllers\FoodCartController;
         Route::get('/category/edit/{id}', [CategoryController::class, 'edit_category']);
         Route::post('/category/update', [CategoryController::class, 'update_category'])->name('category/update');
         Route::delete('category.delete/{id}', [CategoryController::class, 'softDelete'])->name('category.delete');
-        //warehouse
-        Route::get('/warehouse/index', [WarehouseController::class, 'index'])->name('warehouse/index');
-        Route::post('/warehouse.store', [WarehouseController::class, 'store'])->name('warehouse.store');
-        Route::get('/warehouse.edit/{id}', [WarehouseController::class, 'edit_warehouse'])->name('warehouse.edit');
-        Route::post('/warehouse/update', [WarehouseController::class, 'update_Warehouse'])->name('warehouse/update');
-        Route::delete('warehouse.delete/{id}', [WarehouseController::class, 'Deletewarehouse'])->name('warehouse.delete');
         //product Details 
         Route::get('/product/index', [ProductController::class, 'index'])->name('product/index');
         Route::post('/product.store', [ProductController::class, 'store'])->name('product.store');
@@ -74,7 +67,7 @@ use App\Http\Controllers\FoodCartController;
         Route::post('/product/update-status', [ProductController::class, 'updateStatus'])->name('product.updateStatus');
 
     });
-    //Barangay Profiles
+    //Order 
     Route::get('/orders/orders', [OrderController::class, 'orders'])->name('orders/orders');
     Route::get('/order/index', [OrderController::class, 'index'])->name('order/index');
     Route::get('/product/info/{id}', [OrderController::class, 'getInfo'])->name('product/info');
@@ -108,3 +101,5 @@ use App\Http\Controllers\FoodCartController;
     Route::post('/add-to-cart', [FoodCartController::class, 'addToCart'])->name('cart.add');
     Route::get('/yourorders/{order_no}/{table_no}', [FoodCartController::class, 'customerorder'])->name('yourorders');
     Route::post('/submit-order', [FoodCartController::class, 'submitOrder']);
+    Route::get('/ordertime',[CustomerController::class,'timeorder'])->name('ordertime');
+    Route::get('/kitchen/orders-json', [CustomerController::class, 'getGroupedOrders'])->name('orders.json');

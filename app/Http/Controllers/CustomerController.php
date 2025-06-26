@@ -50,6 +50,57 @@ class CustomerController extends Controller
 
         return view('customer.userProfile', compact('user', 'totalOrders'));
     }
+   public function timeorder()
+    {
+     
+        return view('customer.ordertime');
+    }
+public function getGroupedOrders()
+{
+    if(Auth::check()){
+        $orders = DB::table('kitchens')
+        ->select(
+            'order_no',
+            'table_no',
+            DB::raw('MAX(updated_at) as updated_at'),
+            DB::raw('MAX(timer) as timer'),
+            DB::raw('MAX(kitchen_status) as kitchen_status')
+        )
+        ->groupBy('order_no', 'table_no')
+        ->havingRaw('MIN(kitchen_status) = MAX(kitchen_status)')
+        ->whereIn('kitchen_status', [2, 3])
+        ->where('user_id',Auth::user()->id)
+        ->get()
+        ->map(function ($order) {
+            $order->updated_at = \Carbon\Carbon::parse($order->updated_at)->toIso8601String();
+            return $order;
+        });
+    }else{
+        $orders = DB::table('kitchens')
+        ->select(
+            'order_no',
+            'table_no',
+            DB::raw('MAX(updated_at) as updated_at'),
+            DB::raw('MAX(timer) as timer'),
+            DB::raw('MAX(kitchen_status) as kitchen_status')
+        )
+        ->groupBy('order_no', 'table_no')
+        ->havingRaw('MIN(kitchen_status) = MAX(kitchen_status)')
+        ->whereIn('kitchen_status', [2, 3])
+        ->get()
+        ->map(function ($order) {
+            $order->updated_at = \Carbon\Carbon::parse($order->updated_at)->toIso8601String();
+            return $order;
+        });
+    }
+    
+
+    return response()->json($orders);
+}
+
+
+
+
     /**
      * Show the form for creating a new resource.
      */

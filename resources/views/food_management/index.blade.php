@@ -263,20 +263,21 @@
                         <input type="number" class="form-control" id="price" name="price" placeholder="Set Price" required>
                         <span id="price-error" class="text-danger" role="alert"></span>
                     </div>
-                    <div class="form-group col-md-6">
+                    {{-- <div class="form-group col-md-6">
                         <label for="price">Discount when login</label>
                         <input type="number" class="form-control" id="discount" name="discount" placeholder="Set discount when user login" required>
                         <span id="discount-error" class="text-danger" role="alert"></span>
-                    </div>
-                </div>
-                 <div class="form-row">
+                    </div> --}}
                     <div class="form-group col-md-6">
                         <label for="description">Food Description</label>
                         <input type="text" class="form-control" id="description" name="description" placeholder="" >
                         <span id="description-error" class="text-danger" role="alert"></span>
                     </div>
-                    
                 </div>
+                 {{-- <div class="form-row">
+                    
+                    
+                </div> --}}
             </form>
 
             </div>
@@ -381,19 +382,20 @@
                         <input type="number" class="form-control" id="editprice" name="editprice" placeholder="Set Reorder Point">
                         <span id="reorder-error" class="text-danger" role="alert"></span>
                     </div>
-                    <div class="form-group col-md-6">
+                    {{-- <div class="form-group col-md-6">
                         <label for="warehouse">Discount</label>
                        <input type="number" class="form-control" id="editdiscount" name="editdiscount">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
+                    </div> --}}
+                     <div class="form-group col-md-6">
                         <label for="reorder">Description</label>
                         <input type="text" class="form-control" id="editdescription" name="editdescription" placeholder="Set Reorder Point">
                         <span id="reorder-error" class="text-danger" role="alert"></span>
                     </div>
-                  
                 </div>
+                {{-- <div class="form-row">
+                   
+                  
+                </div> --}}
             </form>
             </div>
             <div class="modal-footer">

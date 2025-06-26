@@ -174,7 +174,11 @@
                     border-radius: 10px;
                 ">
                     Hi , <small><a href="/userProfile">{{ Auth::user()->f_name }}</a></small> 
+                   
                 </span>
+                 <a href="/ordertime" class="btn btn-secondary" style="margin-left:5mm"  >
+                      <i class="fa fa-clock me-1" ></i> 
+                    </a>
             </div>
             @else
                <span class="description-title" style="
@@ -190,7 +194,11 @@
         @endif
 
                   @if(Auth::check())
-              <button id="logoutBtn" class="btn btn-danger" style="font-weight: bold; padding: 10px 20px; margin-right:2%"><i class="fa fa-sign-out-alt"></i></button>
+            
+                    
+                 <button id="logoutBtn" class="btn btn-danger" style="font-weight: bold; padding: 10px 20px; margin-right:2%"><i class="fa fa-sign-out-alt"></i></button>
+               
+
                                                                 
                   <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
                       @csrf
@@ -484,17 +492,30 @@
             <div class="modal-body">
               <div id="orderCardsContainer" class="row gy-3"></div>
               <h5 class="text-end mt-3" >Total: ₱ <span id="orderTotal" style="border: 1px solid #ccc; background-color: #107a29; color: rgb(255, 255, 255); padding: 5px 10px; border-radius: 5px;">0.00</span></h5>
-              <div class="form-group">
-                  <label for="categoryDescription">Your Table Number ?</label>
-                 <select name="table_no" id="table_no" class="form-control">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                 </select>
+              <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="table_no">Your Table Number?</label>
+                    <select name="table_no" id="table_no" class="form-control">
+                        <option value="">Select table</option>
+                        @for ($i = 1; $i <= 6; $i++)
+                            <option value="{{ $i }}">{{ $i }}</option>
+                        @endfor
+                    </select>
                 </div>
+
+                <div class="form-group col-md-6">
+                    <label>Dine Option</label><br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="order_type" id="dine_in" value="0">
+                        <label class="form-check-label" for="dine_in">Dine In</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="order_type" id="take_out" value="1">
+                        <label class="form-check-label" for="take_out">Take Out</label>
+                    </div>
+                </div>
+            </div>
+
             </div>
             <div class="modal-footer">
                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close"> Add Order</button>
@@ -514,8 +535,6 @@
 
           <script>
              let orders = [];
-
-            // Add to cart with fly-to-cart animation
             $(document).on('click', '.add-to-cart', function () {
                 const button = $(this);
                 const productCard = button.closest('.product-card');
@@ -538,7 +557,6 @@
                 updateOrderCards();
                 updateCartCount();
 
-                // Fly-to-cart animation
                 const flyImg = $('<img>', {
                     src: image,
                     class: 'fly-image',
@@ -607,7 +625,6 @@
                 updateCartCount();
             }
 
-            // Quantity change
             $(document).on('change', '.quantity-input', function () {
                 const index = $(this).closest('.col-12').data('index');
                 const newQty = parseInt($(this).val());
@@ -615,17 +632,14 @@
                 updateOrderCards();
             });
 
-            // Remove item
             $(document).on('click', '.remove-item', function () {
                 const index = $(this).closest('.col-12').data('index');
                 orders.splice(index, 1);
                 updateOrderCards();
             });
 
-            // Submit Order
             $('#placeOrderBtn').on('click', function() {
                 if (orders.length === 0) {
-                    // alert('No orders to submit.');
                         Swal.fire({
                           title: 'No orders to submit',
                           icon: 'warning',
@@ -633,12 +647,14 @@
                     return;
                 }
                 const tableNo = $('#table_no').val(); 
+                const orderType = $('input[name="order_type"]:checked').val(); 
                 $.ajax({
                     url: '/submit-order',  
                     method: 'POST',
                     data: {
                         orders: orders,
                         table_no: tableNo,
+                        order_type: orderType,
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
@@ -650,7 +666,6 @@
                 });
             });
 
-            // Update cart count badge
             function updateCartCount() {
                 let totalCount = orders.reduce((sum, item) => sum + item.quantity, 0);
                 if (totalCount > 0) {

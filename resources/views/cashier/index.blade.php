@@ -177,12 +177,16 @@
                                                
                                                 <div class="ml-5"><strong>Table No :</strong> ${order.table_no}</div>
                                             </div>
+                                           <div class="text-center mt-2 text-primary">
+                                                <h6>${order.order_type == 0 ? 'Dine In' : 'Take Out'}</h6>
+                                            </div>
+
                                             <div class="card-body p-2">
                                                 ${productList}
                                             </div>
                                             <div class="card-footer d-flex justify-content-between align-items-center">
                                                 ${getStatusText(order.payment_status)}
-                                                <a href="/payorders?order_no=${order.order_no}&table_no=${order.table_no}&user_id=${order.user_id}" class="btn btn-sm btn-success">
+                                                <a href="/payorders?order_no=${order.order_no}&table_no=${order.table_no}&user_id=${order.user_id}&order_type=${order.order_type}" class="btn btn-sm btn-success">
                                                     Pay Order
                                                 </a>
                                             </div>
@@ -197,13 +201,12 @@
                                 url: '/fetch-orders',
                                 method: 'GET',
                                 success: function(data) {
-                                    allOrders = data; // store all orders globally
+                                    allOrders = data; 
                                     applyFilter();
                                 }
                             });
                         }
 
-                        // Apply filters from both inputs
                         function applyFilter() {
                             let orderKeyword = $('#orderNoInput').val().toLowerCase().trim();
                             let tableKeyword = $('#tableNoInput').val().toLowerCase().trim();
@@ -217,10 +220,8 @@
                             renderOrders(filtered);
                         }
 
-                        // Initial fetch
                         fetchOrders();
 
-                        // Auto refresh only if both search boxes are empty
                         setInterval(function() {
                             let orderKeyword = $('#orderNoInput').val().trim();
                             let tableKeyword = $('#tableNoInput').val().trim();
@@ -229,7 +230,6 @@
                             }
                         }, 3000);
 
-                        // Bind search events
                         $('#orderNoInput, #tableNoInput').on('input', applyFilter);
                         </script>
 

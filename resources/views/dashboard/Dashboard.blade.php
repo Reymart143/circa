@@ -62,32 +62,15 @@
         </style>
              <div class="col-md-6 col-lg-6 col-xl-4 mb-2">
                 <div class="mb-3 card flex-fill" style="min-height: 100%;">
-                    <div class="card-header-tab card-header">
-                       <div class="card-header-title font-size-lg text-capitalize font-weight-normal">
-                                <a href="{{ route('product/index')}}" class="btn btn-primary mr-2"> Manage stock</a>
-                                Product Stock
-
-                                {{-- @php
-                                    $lowStockCount = App\Models\Product::whereColumn('quantity', '<=', 'reorder')->count();
-                                @endphp
-
-                                @if($lowStockCount > 0)
-                                    <span class="low-stock-alert" title="Low Stock Alert!">
-                                        &#9888; 
-                                    </span>
-                                @endif --}}
-                            </div>
-                    </div>
+           
                     <div class="p-0 card-body">
                         <div class="dropdown-menu-header mt-0 mb-0">
                             <div class="dropdown-menu-header-inner bg-heavy-rain">
                                 <div class="menu-header-image opacity-1" style="background-image: url('assets/images/dropdown-header/city3.jpg');"></div>
                                 <div class="menu-header-content text-dark">
-                                    <h5 class="menu-header-title">Low Stock Alerts</h5>
+                                    <h5 class="menu-header-title">Best Seller</h5>
                                     <h6 class="menu-header-subtitle">
-                                        You have
-                                        {{-- <b class="text-danger">{{ $lowStockCount = App\Models\Product::whereColumn('quantity', '<=', 'reorder')->count() }}</b> --}}
-                                        products low on stock
+                                       Top 10 Best Selling Products
                                     </h6>
                                 </div>
                             </div>
@@ -99,25 +82,35 @@
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Product Name</th>
-                                        <th class="text-center">Stock Available</th>
+                                        <th class="text-center">Total Ordered</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{-- @php
-                                        $lowStocks = App\Models\Product::whereColumn('quantity', '<=', 'reorder')->get();
+                                    @php
+                                        $bestSellers = DB::table('orders')
+                                            ->join('products', 'orders.food_id', '=', 'products.id')
+                                            ->select('products.product_name', DB::raw('SUM(orders.quantity) as total_ordered'))
+                                            ->groupBy('orders.food_id', 'products.product_name')
+                                            ->orderByDesc('total_ordered')
+                                            ->limit(10)
+                                            ->get();
                                     @endphp
-                                    @forelse($lowStocks as $product)
+
+                                    @forelse($bestSellers as $item)
                                         <tr>
-                                            <td>{{ $product->product_name }}</td>
-                                            <td class="text-center"><span class="badge badge-danger"> {{ $product->quantity }}</span></td>
+                                            <td>{{ $item->product_name }}</td>
+                                            <td class="text-center">
+                                                <span class="badge badge-success">{{ $item->total_ordered }}</span>
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="2" class="text-center text-muted">No low stock products.</td>
+                                            <td colspan="2" class="text-center text-muted">No orders found.</td>
                                         </tr>
                                     @endforelse
-                                </tbody> --}}
+                                </tbody>
                             </table>
+
                         </div>
                     </div>
 
@@ -127,11 +120,11 @@
                 <div class="col-md-6">
                     <div class="custom-widget-card bg-secondary text-white">
                         <div class="text-center">
-                            <div class="icon-wrapper rounded-circle bg-primary text-white mx-auto p-3 custom-widget-icon">
+                            <div class="icon-wrapper rounded-circle bg-primary text-white mx-auto custom-widget-icon">
                                 <i class="fa fa-users"></i>
                             </div>
-                            <div class="custom-widget-numbers">{{ $totalB = App\Models\User::count(); }}</div>
-                            <div class="custom-widget-description text-white">Total Members</div>
+                            <div class="custom-widget-numbers">{{ $totalB = App\Models\User::where('role',0)->count(); }}</div>
+                            <div class="custom-widget-description text-white">Total Customer</div>
                         </div>
                     </div>
                 </div>
@@ -139,8 +132,9 @@
                 <div class="col-md-6">
                     <div class="custom-widget-card bg-primary text-white">
                         <div class="text-center">
-                            <div class="icon-wrapper rounded-circle bg-success text-white mx-auto p-3 custom-widget-icon">
-                                <i class="fa fa-clipboard-list"></i>
+                            <div class="icon-wrapper rounded-circle bg-success text-white mx-auto  custom-widget-icon">
+                               
+                                 <i class="fa fa-shopping-cart"></i>
                             </div>
                             <div class="custom-widget-numbers">{{ $totalO = App\Models\Order::count(); }}</div>
                             <div class="custom-widget-description text-white">Total Orders</div>
@@ -152,10 +146,10 @@
                     <div class="custom-widget-card bg-info text-white">
                         <div class="text-center">
                             <div class="icon-wrapper rounded-circle bg-danger text-white mx-auto p-3 custom-widget-icon">
-                                <i class="fa fa-shopping-cart"></i>
+                                <i class="fa fa-clipboard-list"></i>
                             </div>
                             <div class="custom-widget-numbers text-white">{{ $totalC = App\Models\Product::count(); }}</div>
-                            <div class="custom-widget-description text-white">Total Products</div>
+                            <div class="custom-widget-description text-white">Total Dish</div>
                         </div>
                     </div>
                 </div>

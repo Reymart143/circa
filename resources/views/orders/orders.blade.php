@@ -10,7 +10,7 @@
                     </div> 
                     <div>
                        Total Amount
-                        <div class="badge badge-success">{{ $total_order = App\Models\Order::sum('total_amount'); }} .00</div>
+                        <div class="badge badge-success">{{ $total_order = App\Models\Order::sum('total_price'); }} .00</div>
                     </div> 
                 </div>
             </div>
@@ -22,121 +22,107 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <h5 class="card-title mb-0"><i class=" fa fa-clipboard-list"></i> Order List</h5>
-                                <a href="{{ route('order/index')}}" class="btn btn-gradient-info"><i class="fa fa-shopping-cart"></i> Add Orders</a>
+                                {{-- <a href="{{ route('order/index')}}" class="btn btn-gradient-info"><i class="fa fa-shopping-cart"></i> Add Orders</a> --}}
                             </div>
                             
                             <div class="table-responsive">
                                 <table class="mb-0 table table-striped" id="order_table">
                                    <thead>
                                             <tr>
-                                                <th>Transaction #</th>
+                                                <th>Order #</th>
+                                                <th>Table #</th>
                                                 <th>Customer Name</th>
-                                                <th>Address</th>
-                                                <th>Phone #</th>
-                                                <th>Product Name</th>
+                                                <th>Food Ordered</th>
                                                 <th>Category</th>
-                                                <th>Total Ordered</th>
+                                                <th>Qty</th>
                                                 <th>Total Amount</th>
                                                 <th>Status</th> 
-                                                <th>Action</th>
+                                                <th>Transaction Date</th>
                                             </tr>
                                         </thead>
 
 
                                     <tbody>
                                    
-                                        <script>
-                                            $(document).ready(function() {
-                                            $('#order_table').DataTable({
-                                        
-                                                "processing": true,
-                                            
-                                                serverSide: true,
-                                                ajax: "{{ route('orders/orders') }}",
-                                                columns: [
-                                                     {
-                                                        data: 'transaction_no',
-                                                        name: 'transaction_no',
-                                                        render: function(data) {
-                                                            return data ? `<button class="text-wrap btn btn-outline-warning">${data}</button>` : '<div class="text-wrap">No data</div>';
-                                                        }
-                                                    },
-                                                        {
-                                                        data: 'customer_name',
-                                                        name: 'customer_name',
-                                                        render: function(data) {
-                                                            return data ? `<div class="text-wrap">${data}</div>` : '<div class="text-wrap">No data</div>';
-                                                        }
-                                                    },
-                                                    {
-                                                        data: 'address',
-                                                        name: 'address',
-                                                        render: function(data) {
-                                                            return data ? `<div class="text-wrap">${data}</div>` : '<div class="text-wrap">No data</div>';
-                                                        }
-                                                    },
-                                                    {
-                                                        data: 'phone_no',
-                                                        name: 'phone_no',
-                                                        render: function(data) {
-                                                            return data ? `<div class="text-wrap">${data}</div>` : '<div class="text-wrap">No data</div>';
-                                                        }
-                                                    },
-                                                    {
-                                                        data: 'product_name',
-                                                        name: 'product_name',
-                                                        render: function(data) {
-                                                            return data ? `<div class="text-wrap">${data}</div>` : '<div class="text-wrap text-danger">This product has been deleted</div>';
-                                                        }
-                                                    },
-                                                    {
-                                                        data: 'category',
-                                                        name: 'category',
-                                                        render: function(data) {
-                                                            return data ? `<div class="text-wrap">${data}</div>` : '<div class="text-wrap text-danger">This product has been deleted</div>';
-                                                        }
-                                                    },
-
-                                                      {
-                                                        data: 'quantity',
-                                                        name: 'quantity',
-                                                        render: function(data) {
-                                                            return data ? `<div class="text-wrap">${data}</div>` : '<div class="text-wrap">No data</div>';
-                                                        }
-                                                    },
-                                                       {
-                                                        data: 'total_amount',
-                                                        name: 'total_amount',
-                                                        render: function(data) {
-                                                        return data ? `<div class="text-wrap">₱ ${Number(data).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>` : '<div class="text-wrap">No data</div>';
-
-                                                        }
-                                                    },
-                                                   
-                                                  
-                                                      {
-                                                        data: 'status',
-                                                        name: 'status',
-                                                        render: function(data) {
-                                                            if(data === 0){
-                                                                return data ? `<span class="text-wrap badge badge-success"> Paid </span>` : '<span class="text-wrap badge badge-success"> Paid </span>';
-                                                            }else{
-                                                                return data ? `<span class="text-wrap badge badge-danger"> Not Paid </span>` : '<span class="text-wrap badge badge-danger"> Not Paid </span>';
-                                                            }
-                                                            
-                                                        }
-                                                    },
-                                                    
-                                                   
-                                                    {
-                                                        data: 'action',
-                                                        name: 'action',
-                                                        orderable: false,
-                                                        searchable: false
+                                     <script>
+                                    $(document).ready(function() {
+                                        $('#order_table').DataTable({
+                                            processing: true,
+                                            serverSide: true,
+                                            ajax: "{{ route('orders/orders') }}",
+                                            columns: [
+                                                {
+                                                    data: 'order_no',
+                                                    name: 'order_no',
+                                                    render: data => `<button class="text-wrap btn btn-primary">${data ?? 'No data'}</button>`
+                                                },
+                                                {
+                                                    data: 'table_no',
+                                                    name: 'table_no',
+                                                    render: data => `<button class="text-wrap btn btn-success">${data ?? 'No data'}</button>`
+                                                },
+                                                {
+                                                    data: 'customer_name',
+                                                    name: 'customer_name',
+                                                    render: data => `<div class="text-wrap">${data ?? 'No data'}</div>`
+                                                },
+                                               {
+                                                    data: 'food_items',
+                                                    name: 'food_items',
+                                                    orderable: false,
+                                                    searchable: false,
+                                                    render: function(data) {
+                                                        return data ? data.replace(/\n/g, '<br>') : '';
                                                     }
-                                                ]
-                                            });
+                                                },
+                                                {
+                                                    data: 'category',
+                                                    name: 'category',
+                                                    render: data => data ? `<div class="text-wrap">${data}</div>` : '<div class="text-wrap text-danger">Deleted</div>'
+                                                },
+                                                {
+                                                    data: 'quantity',
+                                                    name: 'quantity',
+                                                    visible: false 
+                                                },
+                                                {
+                                                    data: 'total_price',
+                                                    name: 'total_price',
+                                                    render: data => `<div class="text-wrap">₱ ${Number(data).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>`
+                                                },
+                                                {
+                                                    data: 'payment_status',
+                                                    name: 'payment_status',
+                                                    render: data => {
+                                                        if (parseInt(data) === 0) {
+                                                            return '<span class="badge badge-success">Paid</span>';
+                                                        }
+                                                        return '<span class="badge badge-danger">Not Paid</span>';
+                                                    }
+                                                },
+                                                 {
+                                                    data: 'created_at',
+                                                    name: 'created_at',
+                                                    render: function(data) {
+                                                        if (!data) return '<div class="text-wrap">No date</div>';
+
+                                                        const date = new Date(data);
+                                                        const options = {
+                                                            year: 'numeric',
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                            hour12: true
+                                                        };
+                                                        return `<div class="text-wrap">${date.toLocaleString('en-US', options)}</div>`;
+                                                    }
+                                                },
+
+                                            ]
                                         });
+                                    });
+
                                          function confirmDeleteOrder(id) {
                         
                                                 Swal.fire({

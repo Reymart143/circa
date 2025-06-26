@@ -16,42 +16,43 @@ class OrderController extends Controller
     {
         return view('orders.index');
     }
-   public function orders(Request $request)
-    {
-        if ($request->ajax()) {
-            $orderDetail = DB::table('orders')
-                    ->leftJoin('products', 'orders.product_id', '=', 'products.id')
-                    ->select(
-                        'orders.id',
-                        'orders.customer_name',
-                        'orders.transaction_no',
-                        'orders.address',
-                        'orders.phone_no',
-                        'orders.status',
-                        'orders.total_amount',
-                        'orders.quantity',
-                        'products.product_name',
-                        'products.category',
-                        'orders.created_at'
-                    )
-                    ->get();
+public function orders(Request $request)
+{
+    if ($request->ajax()) {
+
+       $orders = DB::table('orders')
+    ->leftJoin('products', 'orders.food_id', '=', 'products.id')
+    ->leftJoin('users', 'orders.user_id', '=', 'users.id')
+    ->select(
+        'orders.order_no',
+       DB::raw("GROUP_CONCAT(CONCAT(orders.quantity, 'x ', COALESCE(products.product_name, 'Deleted')) SEPARATOR '\n') AS food_items"),
+
+        DB::raw('SUM(orders.quantity) AS quantity'),
+        DB::raw('SUM(orders.total_price) AS total_price'), // ✅ Sum total price per order
+        DB::raw('MAX(orders.user_id) AS user_id'),
+        DB::raw("MAX(
+            CASE 
+                WHEN orders.user_id LIKE 'guest%' THEN CONCAT('Guest (', orders.user_id, ')')
+                ELSE CONCAT(COALESCE(users.f_name, ''), ' ', COALESCE(users.l_name, ''))
+            END
+        ) AS customer_name"),
+        DB::raw('MAX(products.category) AS category'),
+        DB::raw('MAX(orders.created_at) AS created_at'),
+        DB::raw('MAX(orders.payment_status) AS payment_status'),
+        DB::raw('MAX(orders.table_no) AS table_no')
+    )
+    ->groupBy('orders.order_no')
+    ->orderByDesc(DB::raw('MAX(orders.created_at)'))
+    ->get();
 
 
-            return datatables()->of($orderDetail)->addIndexColumn()
-                ->addColumn('action', function ($orderDetail) {
-                    $button = '
-                    
-                        <button type="button" name="softDelete" onclick="confirmDeleteOrder(' . $orderDetail->id . ')" class="btn btn-danger btn-sm">
-                            <i class="fa fa-trash"></i> <span>Delete</span>
-                        </button>
-                    ';
-                    return $button;
-                })
-                ->make(true);
-        }
-
-        return view('orders.orders');
+        return datatables()->of($orders)->addIndexColumn()
+            ->make(true);
     }
+
+    return view('orders.orders');
+}
+
     public function getProductsByCategory($category)
     {
         $products = DB::table('products')

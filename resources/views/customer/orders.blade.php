@@ -69,6 +69,7 @@
             </div>
         </div>
         <a href="/menu" class="btn btn-success mt-4"><i class="fa fa-arrow-left"></i> Order More </a>
+        <a href="/ordertime" class="btn btn-secondary mt-4"><i class="fa fa-clock"></i> Track Order </a>
         <div class="sub-title">
             Thank you for your order!
         </div>

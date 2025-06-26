@@ -28,7 +28,7 @@ class DashboardController extends Controller
         $rawSales = DB::table('orders')
             ->select(
                 DB::raw("MONTH(created_at) as month"),
-                DB::raw("SUM(total_amount) as total_sales")
+                DB::raw("SUM(total_price) as total_sales")
             )
             ->whereYear('created_at', 2025)
             ->groupBy(DB::raw("MONTH(created_at)"))

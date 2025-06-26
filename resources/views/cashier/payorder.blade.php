@@ -158,6 +158,7 @@
 
                     <div class="col-md-5">
                         <div class="card shadow-sm mb-4">
+                            
                             <div class="card-body bg-white">
                                 <div class="mb-4" style="background: #f8f9fa; padding: 20px; border: 2px solid #ccc; border-radius: 10px;">
                                     <div class="text-center" style="font-size: 36px; font-weight: bold; color: #222;">
@@ -177,7 +178,7 @@
                                         @endif
                                     </div>
                                 </div>
-
+                            
                              <input type="hidden" name="user_id" id="user_id" value="{{ $user_id}}">
                                 <h5>Order Summary</h5>
                                 <div class="table-responsive">
@@ -209,6 +210,18 @@
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="payment_type" id="card" value="card">
                                             <label class="form-check-label" for="card">Card (5% Discount)</label>
+                                        </div>
+                                    </div>
+                                  <div class="form-group align-items-center">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="order_type" id="dine_in" value="0"
+                                                {{ $order_type == 0 ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="dine_in">Dine In</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="order_type" id="take_out" value="1"
+                                                {{ $order_type == 1 ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="take_out">Take Out</label>
                                         </div>
                                     </div>
 
@@ -335,6 +348,7 @@
                     }
                     let paymentType = $('input[name="payment_type"]:checked').val();
                     let grandTotal = 0;
+                    let orderType = $('input[name="order_type"]:checked').val();
 
                     currentOrder.forEach(item => {
                         grandTotal += item.quantity * item.price;
@@ -362,6 +376,7 @@
                             user_id: "{{ $user_id }}",
                             table_no: document.getElementById('table_no') ? document.getElementById('table_no').value : "{{ $table_no }}",
                             payment_type: paymentType,
+                            order_type: orderType,
                             customer_amount: customerAmount,
                             discount: discount,
                             total_amount: finalTotal,
@@ -369,7 +384,7 @@
                             _token: "{{ csrf_token() }}"
                         },
                         success: function(response) {
-                            // alert("Order placed successfully!");
+                           
                              Swal.fire({
                                 icon: 'success',
                                 title: 'Order Submitted Successfully',
@@ -447,7 +462,7 @@ $(document).ready(function() {
         SERIAL NO: W3T92P6R<br>
         ------------------------------------<br>
         BILL NO: <strong>{{ $order_no }}</strong><br>
-        DINE IN<br>
+        {{ $order_type == 0 ? 'DINE IN' : 'TAKE OUT' }}<br>
         ------------------------------------<br>
     `;
 

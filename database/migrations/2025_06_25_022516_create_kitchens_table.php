@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('user_id')->nullable();
             $table->string('quantity')->nullable();
             $table->string('timer')->nullable();
+            $table->string('order_type')->nullable();
             $table->integer('kitchen_status')->default(0);
             $table->timestamps();
         });

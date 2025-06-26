@@ -76,12 +76,46 @@
   </div>
 
    <div class="row mt-4" id="orders-container">
-        <!-- Orders will be loaded here -->
     </div>
 </div>
     
 <script>
 let countdownIntervals = {};
+let offlineQueue = JSON.parse(localStorage.getItem('offline_queue') || '[]');
+
+function saveQueue() {
+    localStorage.setItem('offline_queue', JSON.stringify(offlineQueue));
+}
+
+function retryQueuedRequests() {
+    if (!navigator.onLine || offlineQueue.length === 0) return;
+
+    const queueCopy = [...offlineQueue];
+    offlineQueue = [];
+
+    queueCopy.forEach(action => {
+        $.post(action.url, action.data).fail(() => {
+            offlineQueue.push(action);
+            saveQueue();
+        });
+    });
+
+    saveQueue();
+}
+
+function sendPost(url, data, callback = null) {
+    if (navigator.onLine) {
+        $.post(url, data, function (response) {
+            if (callback) callback(response);
+        }).fail(() => {
+            offlineQueue.push({ url, data });
+            saveQueue();
+        });
+    } else {
+        offlineQueue.push({ url, data });
+        saveQueue();
+    }
+}
 
 function formatTime(seconds) {
     if (seconds <= 0) return '✅';
@@ -107,38 +141,79 @@ function startCountdown(id, endTime) {
         if (remaining <= 0) {
             badge.innerHTML = '✅';
             clearInterval(countdownIntervals[id]);
+            delete countdownIntervals[id];
             localStorage.setItem(`timer_done_${id}`, '1');
             localStorage.removeItem(`timer_${id}`);
-            updateStatus(id, 3); // Auto to Ready
+            updateStatus(id, 3);
         } else {
             badge.innerHTML = formatTime(remaining);
         }
     }, 1000);
 }
 
+function updateStatus(id, status) {
+    if (status >= 3) {
+        clearInterval(countdownIntervals[id]);
+        delete countdownIntervals[id];
+        localStorage.setItem(`timer_done_${id}`, '1');
+        localStorage.removeItem(`timer_${id}`);
+        const badge = document.getElementById(`timer-badge-${id}`);
+        if (badge) badge.innerHTML = '✅';
+    } else {
+        localStorage.removeItem(`timer_done_${id}`);
+    }
+
+    sendPost('/kitchen/update-status', {
+        id: id,
+        status: status,
+        _token: '{{ csrf_token() }}'
+    }, fetchOrders);
+}
+
+function setTimer(id, timer) {
+    const currentStatus = parseInt($(`select[onchange*="updateStatus(${id}"]`).val());
+    if (currentStatus >= 3) return;
+
+    const endTime = Date.now() + timer * 60 * 1000;
+    localStorage.setItem(`timer_${id}`, endTime);
+    localStorage.removeItem(`timer_done_${id}`);
+
+    sendPost('/kitchen/set-timer', {
+        id: id,
+        timer: timer,
+        _token: '{{ csrf_token() }}'
+    }, fetchOrders);
+
+    updateStatus(id, 2); 
+}
+
+function closeOrder(id) {
+    updateStatus(id, 5); 
+}
+
 function fetchOrders() {
-    $.get('/kitchen/orders', function(orders) {
+    $.get('/kitchen/orders', function (orders) {
         const container = $('#orders-container');
         container.empty();
 
-       let servedCount = 0;
+        let servedCount = 0;
 
-          orders.forEach(order => {
-              if (order.kitchen_status === 4 || order.kitchen_status === 5) {
-                  servedCount++;
-              }
-          });
+        orders.forEach(order => {
+            if (order.kitchen_status === 4 || order.kitchen_status === 5) {
+                servedCount++;
+            }
+        });
 
-          orders = orders.filter(order => order.kitchen_status !== 5);
+        orders = orders.filter(order => order.kitchen_status !== 5);
 
-          const counts = {1: 0, 2: 0, 3: 0, 4: 0};
-          orders.forEach(order => counts[order.kitchen_status]++);
+        const counts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+        orders.forEach(order => counts[order.kitchen_status]++);
 
         $('#status-badges').html(`
             <span class="badge bg-danger me-2">${counts[1]} New</span>
             <span class="badge bg-warning text-dark me-2">${counts[2]} Process</span>
             <span class="badge bg-success me-2">${counts[3]} Ready</span>
-               <span class="badge bg-secondary">${servedCount} Served</span>
+            <span class="badge bg-secondary">${servedCount} Served</span>
         `);
 
         orders.sort((a, b) => {
@@ -169,7 +244,6 @@ function fetchOrders() {
             }
 
             const badgeHtml = `<span class="badge bg-light text-dark" id="timer-badge-${id}">${badgeText}</span>`;
-
             const products = order.items.map(item => `<li>${item.quantity}x ${item.product_name}</li>`).join('');
 
             const statusSelect = `
@@ -181,7 +255,6 @@ function fetchOrders() {
                 </select>`;
 
             const timerDisabled = (isDone || status >= 3) ? 'disabled' : '';
-
             const closeBtn = status == 4 ? `<button class="btn btn-sm btn-danger ms-2 text-white" onclick="closeOrder(${id})">X</button>` : '';
 
             container.append(`
@@ -190,7 +263,10 @@ function fetchOrders() {
                         <div class="card-header text-white ${['', 'bg-danger', 'bg-warning text-dark', 'bg-success', 'bg-secondary'][status]} d-flex justify-content-between align-items-center">
                             <div>
                                 <strong>📡 Table ${order.table_no}</strong><br>
-                                <small>Order #${order.order_no}</small>
+                                <small>Order #: ${order.order_no}</small>
+                            </div>
+                            <div class="text-center mt-2 text-white">
+                                <h6>${order.order_type == 0 ? 'Dine In' : 'Take Out'}</h6>
                             </div>
                             <div class="d-flex align-items-center">
                                 ${badgeHtml}
@@ -198,6 +274,7 @@ function fetchOrders() {
                             </div>
                         </div>
                         <div class="card-body bg-white">
+                            
                             <div class="text-muted mb-2" style="font-size: 12px;">${new Date(order.created_at).toLocaleTimeString()}</div>
                             <ul class="mb-3">${products}</ul>
                             <div class="d-flex gap-2">
@@ -217,104 +294,10 @@ function fetchOrders() {
     });
 }
 
-function setTimer(id, timer) {
-    const currentStatus = parseInt($(`select[onchange*="updateStatus(${id}"]`).val());
-    if (currentStatus >= 3) return;
-
-    const endTime = Date.now() + timer * 60 * 1000;
-    localStorage.setItem(`timer_${id}`, endTime);
-    localStorage.removeItem(`timer_done_${id}`);
-
-    updateStatus(id, 2);
-
-    $.post('/kitchen/set-timer', {
-        id: id,
-        timer: timer,
-        _token: '{{ csrf_token() }}'
-    }, fetchOrders);
-}
-
-function updateStatus(id, status) {
-    if (status < 4) {
-        localStorage.removeItem(`timer_done_${id}`);
-    }
-
-    $.post('/kitchen/update-status', {
-        id: id,
-        status: status,
-        _token: '{{ csrf_token() }}'
-    }, fetchOrders);
-}
-
-function closeOrder(id) {
-    updateStatus(id, 5); 
-}
-
-// Start
 fetchOrders();
 setInterval(fetchOrders, 5000);
-</script>
-
-
-
-<script>
-let offlineQueue = JSON.parse(localStorage.getItem('offline_queue') || '[]');
-
-function saveQueue() {
-    localStorage.setItem('offline_queue', JSON.stringify(offlineQueue));
-}
-
-function retryQueuedRequests() {
-    if (!navigator.onLine || offlineQueue.length === 0) return;
-
-    const queueCopy = [...offlineQueue];
-    offlineQueue = [];
-
-    queueCopy.forEach(action => {
-        $.post(action.url, action.data, function(response) {
-        }).fail(() => {
-            offlineQueue.push(action);
-            saveQueue();
-        });
-    });
-
-    saveQueue();
-}
-
-function sendPost(url, data) {
-    if (navigator.onLine) {
-        $.post(url, data).fail(() => {
-            offlineQueue.push({ url, data });
-            saveQueue();
-        });
-    } else {
-        offlineQueue.push({ url, data });
-        saveQueue();
-    }
-}
-
-function updateStatus(id, status) {
-    sendPost('/kitchen/update-status', {
-        id: id,
-        status: status,
-        _token: '{{ csrf_token() }}'
-    });
-    fetchOrders(); 
-}
-
-function setTimer(id, timer) {
-    const endTime = Date.now() + timer * 60 * 1000;
-    localStorage.setItem(`timer_${id}`, endTime);
-
-    sendPost('/kitchen/set-timer', {
-        id: id,
-        timer: timer,
-        _token: '{{ csrf_token() }}'
-    });
-    fetchOrders();
-}
-\
 setInterval(retryQueuedRequests, 5000);
 </script>
+
 </body>
 </html>

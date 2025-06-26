@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-
             $table->string('food_id')->nullable();
             $table->string('table_no')->nullable();
             $table->string('user_id')->nullable();
@@ -26,10 +25,10 @@ return new class extends Migration
             $table->integer('payment_status')->default(0);
             $table->string('payment_type')->nullable();
             $table->integer('kitchen_status')->default(0);
+            $table->string('order_type')->nullable();
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */

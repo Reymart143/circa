@@ -14,6 +14,7 @@ class Kitchen extends Model
         'quantity',
         'timer',
         'kitchen_status',
+        'order_type'
     ];
    public function food()
     {

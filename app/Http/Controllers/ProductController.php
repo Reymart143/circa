@@ -12,42 +12,42 @@ use Illuminate\Support\Facades\Storage;
 class ProductController extends Controller
 {
  public function index(Request $request)
-{
-    if ($request->ajax()) {
-        $query = DB::table('products')
-            ->select('id','product_name','start_time','end_time','description',
-                     'price','discount','category','image','status');
+    {
+        if ($request->ajax()) {
+            $query = DB::table('products')
+                ->select('id','product_name','start_time','end_time','description',
+                        'price','discount','category','image','status');
 
-        // ✅ Apply category filter if selected
-        if (!empty($request->category)) {
-            $query->where('category', $request->category);
+            // ✅ Apply category filter if selected
+            if (!empty($request->category)) {
+                $query->where('category', $request->category);
+            }
+
+            return datatables()->of($query)
+                ->addIndexColumn()
+                ->addColumn('action', function ($product) {
+                    $button = '
+                        <input type="hidden" id="account_' . $product->id . '" value="' . $product->product_name . '"/>
+                    
+                        <button type="button" name="edit" onclick="editmodalproduct(' . $product->id . ')" 
+                            class="action-button accept btn btn-shadow btn-gradient-primary btn-sm" 
+                            style="margin-left:7px;padding-top: 2mm;padding-bottom: 2mm;padding-left: 3mm; padding-right: 3mm;font-size: 10px;" >
+                            <i class="fa fa-edit"></i> <span class="action-text" style="font-size:12px">Edit</span>
+                        </button>
+                        
+                        <button type="button" name="softDelete" onclick="confirmDeleteProduct(' . $product->id . ')" 
+                            class="action-button softDelete btn btn-shadow btn-gradient-danger btn-sm" 
+                            style="margin-left:7px;padding-top: 2mm;padding-bottom: 2mm; padding-left: 3mm; padding-right: 3mm;font-size: 10px;">
+                            <i class="fa fa-trash"></i> <span class="action-text" style="font-size:12px">Delete</span>
+                        </button>
+                        ';
+                    return $button;
+                })
+                ->make(true);
         }
 
-        return datatables()->of($query)
-            ->addIndexColumn()
-            ->addColumn('action', function ($product) {
-                $button = '
-                    <input type="hidden" id="account_' . $product->id . '" value="' . $product->product_name . '"/>
-                   
-                    <button type="button" name="edit" onclick="editmodalproduct(' . $product->id . ')" 
-                        class="action-button accept btn btn-shadow btn-gradient-primary btn-sm" 
-                        style="margin-left:7px;padding-top: 2mm;padding-bottom: 2mm;padding-left: 3mm; padding-right: 3mm;font-size: 10px;" >
-                        <i class="fa fa-edit"></i> <span class="action-text" style="font-size:12px">Edit</span>
-                    </button>
-                    
-                    <button type="button" name="softDelete" onclick="confirmDeleteProduct(' . $product->id . ')" 
-                        class="action-button softDelete btn btn-shadow btn-gradient-danger btn-sm" 
-                        style="margin-left:7px;padding-top: 2mm;padding-bottom: 2mm; padding-left: 3mm; padding-right: 3mm;font-size: 10px;">
-                        <i class="fa fa-trash"></i> <span class="action-text" style="font-size:12px">Delete</span>
-                    </button>
-                    ';
-                return $button;
-            })
-            ->make(true);
+        return view('food_management.index'); 
     }
-
-    return view('food_management.index'); 
-}
     public function updateStatus(Request $request)
     {
         $product = DB::table('products')->where('id', $request->id)->first();
@@ -63,7 +63,7 @@ class ProductController extends Controller
         return response()->json(['success' => true, 'message' => 'Status updated successfully.']);
     }
 
-
+   
     /**
      * Show the form for creating a new resource.
      */

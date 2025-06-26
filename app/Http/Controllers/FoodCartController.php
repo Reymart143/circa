@@ -45,7 +45,7 @@ public function submitOrder(Request $request)
 {
     $orders = $request->input('orders');
     $table_no = $request->input('table_no'); 
-    
+    $order_type = $request->input('order_type');
     if (Auth::check()) {
         $user_id = Auth::user()->id;
     } else {
@@ -89,6 +89,7 @@ public function submitOrder(Request $request)
             'order_no'        => $order_no,
             'total_price'     => $order['price'] * $order['quantity'],
             'customer_amount' => 0,
+            'order_type'      => $order_type,
             'created_at'      => now(),
             'updated_at'      => now(),
         ]);

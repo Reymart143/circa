@@ -62,23 +62,17 @@
                     <ul>
                         <li>
                             <a href="login.html">
-                                <i class="metismenu-icon"></i> <i class="fa fa-users"> Export Reports</i> 
+                                <i class="metismenu-icon"></i> <i class="fa fa-users"> Sales Report</i> 
                             </a>
                         </li>
-                       
+                         <li>
+                            <a href="login.html">
+                                <i class="metismenu-icon"></i> <i class="fa fa-users"> Payment History</i> 
+                            </a>
+                        </li>
                     </ul>
                 </li>
-               <li>
-                    <a href="{{ route('cashier') }}" class="{{ Request::is('cashier') ? 'mm-active' : '' }}">
-                        <i class="metismenu-icon fa fa-cash-register"></i> Cashier
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('kitchen') }}" class="{{ Request::is('kitchen') ? 'mm-active' : '' }}">
-                        <i class="metismenu-icon fa fa-utensils"></i> Kitchen
-                    </a>
-                </li>
-
+             
                 <li>
                     <a href="{{ route('users/index') }}"  class="{{ Request::is('users/index') ? 'mm-active' : '' }}">
                         <i class="metismenu-icon fa fa-users"></i>Registered Users
@@ -94,6 +88,17 @@
                         <i class="metismenu-icon fa fa-user"></i> Profile
                     </a>
                 </li>
+                  <li>
+                    <a href="{{ route('cashier') }}" class="{{ Request::is('cashier') ? 'mm-active' : '' }}">
+                        <i class="metismenu-icon fa fa-cash-register"></i> Cashier
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('kitchen') }}" class="{{ Request::is('kitchen') ? 'mm-active' : '' }}">
+                        <i class="metismenu-icon fa fa-utensils"></i> Kitchen
+                    </a>
+                </li>
+
             </ul>
             
         </div>
