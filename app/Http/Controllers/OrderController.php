@@ -12,10 +12,62 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+  public function salesreport()
     {
-        return view('orders.index');
+        $months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        $currentYear = now()->year;
+
+        $sales = DB::table('orders')
+            ->join('products', 'orders.food_id', '=', 'products.id')
+            ->selectRaw('
+                products.product_name as product_name,
+                MONTH(orders.created_at) as month,
+                SUM(orders.total_price) as total_sales
+            ')
+            ->whereYear('orders.created_at', $currentYear) // ✅ Only this year
+            ->groupBy('products.product_name', DB::raw('MONTH(orders.created_at)'))
+            ->get();
+
+        $report = [];
+
+        foreach ($sales as $sale) {
+            $product = $sale->product_name;
+            $month = $sale->month;
+            $total = $sale->total_sales;
+
+            if (!isset($report[$product])) {
+                $report[$product] = array_fill(1, 12, 0); 
+            }
+
+            $report[$product][$month] = $total;
+        }
+
+        return view('reports.salesreport', compact('report', 'months', 'currentYear'));
     }
+    public function paymenthistory()
+    {
+       $payments = DB::table('orders')
+        ->select(
+            'order_no',
+            DB::raw('DATE(created_at) as date'),
+            'order_type',
+            'payment_type',
+            DB::raw('SUM(customer_amount) as customer_amount'),
+            DB::raw('SUM(total_price) as total_price')
+        )
+        ->groupBy('order_no', DB::raw('DATE(created_at)'), 'order_type', 'payment_type')
+        ->orderBy(DB::raw('DATE(created_at)'), 'desc')
+        ->paginate(10);
+
+
+        return view('reports.paymenthistory', compact('payments'));
+    }
+
+    
+public function index()
+{
+    return view('orders.index');
+}
 public function orders(Request $request)
 {
     if ($request->ajax()) {
@@ -28,7 +80,7 @@ public function orders(Request $request)
        DB::raw("GROUP_CONCAT(CONCAT(orders.quantity, 'x ', COALESCE(products.product_name, 'Deleted')) SEPARATOR '\n') AS food_items"),
 
         DB::raw('SUM(orders.quantity) AS quantity'),
-        DB::raw('SUM(orders.total_price) AS total_price'), // ✅ Sum total price per order
+        DB::raw('SUM(orders.total_price) AS total_price'),
         DB::raw('MAX(orders.user_id) AS user_id'),
         DB::raw("MAX(
             CASE 
@@ -63,23 +115,6 @@ public function orders(Request $request)
     }
 
 
-    public function getInfo($id)
-        {
-        $product = DB::table('products')->where('id', $id)->first();
-
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
-
-        return response()->json([
-            'product_name' => $product->product_name,
-            'category' => $product->category,
-            'quantity' => $product->quantity,
-            'price' => $product->price,
-            'warehouse' => $product->warehouse,
-            'reorder' => $product->reorder,
-        ]);
-        }
     /**
      * Show the form for creating a new resource.
      */
@@ -91,62 +126,6 @@ public function orders(Request $request)
     /**
      * Store a newly created resource in storage.
      */
-public function store(Request $request)
-{
-    $orderItems = json_decode($request->order_items_json, true);
-    $errors = [];
-
-    if ($orderItems) {
-        foreach ($orderItems as $item) {
-            $product = DB::table('products')->where('id', $item['product_id'])->first();
-
-            if (!$product) {
-                $errors[] = "Product with ID {$item['product_id']} not found.";
-                continue;
-            }
-
-            if ($item['quantity'] > $product->quantity) {
-                $errors[] = "Cannot proceed: Ordered quantity for '<strong>{$product->product_name}</strong>' exceeds available stock (<strong>{$product->quantity}</strong>).";
-            }
-        }
-
-        if (!empty($errors)) {
-            return redirect()->back()->with('error', implode("<br>", $errors));
-        }
-
-        $latestOrder = DB::table('orders')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        $latestId = $latestOrder ? intval(substr($latestOrder->transaction_no ?? 'TRNO000', 4)) : 0;
-        $transactionNo = 'TRNO' . str_pad($latestId + 1, 3, '0', STR_PAD_LEFT);
-
-        foreach ($orderItems as $item) {
-            DB::table('orders')->insert([
-                'product_id'     => $item['product_id'],
-                'customer_name'  => $request->customer_name,
-                'address'        => $request->address,
-                'phone_no'       => $request->phone_no,
-                'quantity'       => $item['quantity'],
-                'total_amount'   => $item['quantity'] * $item['price'],
-                'transaction_no' => $transactionNo, 
-                'status'         => $request->status,
-                'created_at'     => now(),
-                'updated_at'     => now(),
-            ]);
-
-            DB::table('products')
-                ->where('id', $item['product_id'])
-                ->decrement('quantity', $item['quantity']);
-        }
-
-        return redirect()->back()->with('success', 'Order saved successfully. Transaction No: ' . $transactionNo);
-    } else {
-        return redirect()->back()->with('error', 'Cannot proceed transaction, no product selected.');
-    }
-}
-
-
 
     /**
      * Display the specified resource.

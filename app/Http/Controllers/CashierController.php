@@ -26,8 +26,8 @@ class CashierController extends Controller
    public function fetchOrders()
     {
         $orders = DB::table('orders')
-            ->select('order_no', 'table_no', 'payment_status', 'user_id','order_type')  // ✅ include user_id
-            ->groupBy('order_no', 'table_no', 'payment_status', 'user_id','order_type')
+            ->select('order_no', 'table_no', 'payment_status', 'user_id','order_type','pointused')  // ✅ include user_id
+            ->groupBy('order_no', 'table_no', 'payment_status', 'user_id','order_type','pointused')
             ->orderBy('order_no', 'desc')
             ->where('payment_status',0)
             ->get();

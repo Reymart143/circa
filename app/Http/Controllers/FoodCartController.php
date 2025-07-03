@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FoodCart;
+use App\Models\User;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Auth;
@@ -41,63 +42,82 @@ class FoodCartController extends Controller
 
         return response()->json(['success' => true]);
     }
-public function submitOrder(Request $request)
-{
-    $orders = $request->input('orders');
-    $table_no = $request->input('table_no'); 
-    $order_type = $request->input('order_type');
-    if (Auth::check()) {
-        $user_id = Auth::user()->id;
-    } else {
-        $lastGuest = DB::table('orders')
-                        ->where('user_id', 'like', 'guest%')
-                        ->orderBy('user_id', 'desc')
+    public function submitOrder(Request $request)
+    {
+
+        $orders = $request->input('orders');
+       
+        $table_no = $request->input('table_no'); 
+        $order_type = $request->input('order_type');
+        if($order_type == null){
+            return response()->json(['error'=> 'Please select an order type.'],400);
+        }
+        if (Auth::check()) {
+            $user = User::find(Auth::id());
+            $user_id = $user->id;
+
+            $used_points = floatval($request->input('used_points', 0));
+
+            
+            if ($user->points >= $used_points && $used_points > 0) {
+                $user->points -= $used_points;
+            }
+
+            $user->points += 0.5;
+
+            $user->save();
+
+        } else {
+            $lastGuest = DB::table('orders')
+                            ->where('user_id', 'like', 'guest%')
+                            ->orderBy('user_id', 'desc')
+                            ->first();
+
+            if ($lastGuest) {
+                $lastNumber = intval(substr($lastGuest->user_id, 5)); 
+                $nextGuestNumber = $lastNumber + 1;
+            } else {
+                $nextGuestNumber = 1;
+            }
+            $user_id = 'guest' . str_pad($nextGuestNumber, 3, '0', STR_PAD_LEFT);  
+        }
+
+        $lastOrder = DB::table('orders')
+                        ->where('order_no', 'like', 'circa%')
+                        ->orderBy('order_no', 'desc')
                         ->first();
 
-        if ($lastGuest) {
-            $lastNumber = intval(substr($lastGuest->user_id, 5)); // remove 'guest'
-            $nextGuestNumber = $lastNumber + 1;
+        if ($lastOrder) {
+            $lastNumber = intval(substr($lastOrder->order_no, 5));
+            $nextOrderNumber = $lastNumber + 1;
         } else {
-            $nextGuestNumber = 1;
+            $nextOrderNumber = 1;
         }
-        $user_id = 'guest' . str_pad($nextGuestNumber, 3, '0', STR_PAD_LEFT);  // e.g. guest001
-    }
+        $order_no = 'circa' . str_pad($nextOrderNumber, 3, '0', STR_PAD_LEFT); 
+        // dd($request->all());
 
-    // Generate unique order_no like circa001
-    $lastOrder = DB::table('orders')
-                    ->where('order_no', 'like', 'circa%')
-                    ->orderBy('order_no', 'desc')
-                    ->first();
-
-    if ($lastOrder) {
-        $lastNumber = intval(substr($lastOrder->order_no, 5));  // remove 'circa'
-        $nextOrderNumber = $lastNumber + 1;
-    } else {
-        $nextOrderNumber = 1;
-    }
-    $order_no = 'circa' . str_pad($nextOrderNumber, 3, '0', STR_PAD_LEFT);  // e.g. circa001
-    // dd($request->all());
-    // Loop through orders
-    foreach ($orders as $order) {
-        DB::table('orders')->insert([
-            'food_id'         => $order['id'],
-             'table_no'        => $table_no, 
-            'user_id'         => $user_id,
-            'quantity'        => $order['quantity'],
-            'flavor'          => $order['flavor'],
-            'size'            => $order['size'],
-            'order_no'        => $order_no,
-            'total_price'     => $order['price'] * $order['quantity'],
-            'customer_amount' => 0,
-            'order_type'      => $order_type,
-            'created_at'      => now(),
-            'updated_at'      => now(),
-        ]);
-    }
+        foreach ($orders as $order) {
+            $pointused = Auth::check() ? $used_points : 0;              
+            DB::table('orders')->insert([
+                'food_id'         => $order['id'],
+                'table_no'        => $table_no, 
+                'user_id'         => $user_id,
+                'quantity'        => $order['quantity'],
+                'flavor'          => $order['flavor'],
+                'size'            => $order['size'],
+                'order_no'        => $order_no,
+                'total_price'     => $order['price'] * $order['quantity'],
+                'customer_amount' => 0,
+                'pointused'       => $pointused,
+                'order_type'      => $order_type,
+                'created_at'      => now(),
+                'updated_at'      => now(),
+            ]);
+        }
         return response()->json([
             'redirect_url' => route('yourorders', ['order_no' => $order_no,'table_no' => $table_no])
         ]);
-}
+    }
 
     /**
      * Show the form for creating a new resource.

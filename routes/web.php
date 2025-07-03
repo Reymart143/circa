@@ -103,3 +103,6 @@ use App\Http\Controllers\FoodCartController;
     Route::post('/submit-order', [FoodCartController::class, 'submitOrder']);
     Route::get('/ordertime',[CustomerController::class,'timeorder'])->name('ordertime');
     Route::get('/kitchen/orders-json', [CustomerController::class, 'getGroupedOrders'])->name('orders.json');
+    //Reports 
+     Route::get('/reports/salesreport', [OrderController::class, 'salesreport'])->name('reports/salesreport');
+     Route::get('/reports/paymenthistory', [OrderController::class, 'paymenthistory'])->name('reports/paymenthistory');

@@ -161,12 +161,13 @@
                                         ${product.product_name} <span>${product.quantity}x - ₱${product.total_price.toFixed(2)}</span>
                                     </li>`;
                                 });
-
+                               let deducttotal = grandTotal - order.pointused;
                                 productList += `
                                     <li class="list-group-item d-flex justify-content-between font-weight-bold bg-light">
-                                        Grand Total: <span>₱${grandTotal.toFixed(2)}</span>
+                                        Grand Total: <span>₱${deducttotal.toFixed(2)}</span>
                                     </li>
                                 `;
+
                                 productList += '</ul>';
 
                                 $('#orders-body').append(`
@@ -202,6 +203,7 @@
                                 method: 'GET',
                                 success: function(data) {
                                     allOrders = data; 
+                                    console.log(allOrders)
                                     applyFilter();
                                 }
                             });

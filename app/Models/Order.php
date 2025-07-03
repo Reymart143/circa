@@ -19,6 +19,7 @@ class Order extends Model
         'payment_status',
         'kitchen_status',
         'payment_type',
+        'pointused ',
         'order_type'
     ];
 }

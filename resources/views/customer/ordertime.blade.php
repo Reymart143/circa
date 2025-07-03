@@ -177,7 +177,7 @@
                 </span>
             </div>
             @else
-               {{-- <span class="description-title" style="
+                {{-- <span class="description-title" style="
                     color: #9c1d14;
                     font-size: 15px;
                     padding: 10px 20px;
@@ -185,8 +185,8 @@
                     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
                     border-radius: 10px;
                 ">
-                    {{-- Hi , <small>Guest</small>  
-                </span> --}}
+                     Hi , <small>Guest</small>  
+                </span>  --}}
                 @endif
 
                   @if(Auth::check())

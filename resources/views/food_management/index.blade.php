@@ -101,7 +101,7 @@
                                                             <p class="mb-1"><strong>Category:</strong> ${row.category}</p>
                                                             <p class="mb-1"><strong>Availability:</strong> ${startTime} - ${endTime}</p>
                                                             <p class="mb-1"><strong>Price:</strong> ${price}</p>
-                                                            <p class="mb-1"><strong>Discount:</strong> ${row.discount || '0'} Pesos</p>
+                                                            
                                                              <p>${statusButton}</p>
                                                             <div class="mt-auto ml-4">
                                                                 ${row.action}
@@ -557,7 +557,7 @@
                     var start_time = $('#editstart_time').val().trim();
                     var end_time = $('#editend_time').val().trim();
                     var price = $('#editprice').val().trim();
-                    var discount = $('#editdiscount').val().trim();
+                    var discount = $('#editdiscount').val();
                     var description = $('#editdescription').val().trim();
                     var imageFile = $('#editimage')[0].files[0]; // Image file
 

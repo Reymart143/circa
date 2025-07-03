@@ -24,6 +24,7 @@ return new class extends Migration
             $table->double('customer_amount',10,2)->nullable();
             $table->integer('payment_status')->default(0);
             $table->string('payment_type')->nullable();
+            $table->string('pointused')->nullable();
             $table->integer('kitchen_status')->default(0);
             $table->string('order_type')->nullable();
             $table->timestamps();

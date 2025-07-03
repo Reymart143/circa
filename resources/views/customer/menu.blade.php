@@ -191,6 +191,9 @@
                 ">
                     Hi , <small>Guest</small> 
                 </span>
+                 <a href="/ordertime" class="btn btn-secondary" style="margin-right:5mm"  >
+                      <i class="fa fa-clock me-1" ></i> 
+                    </a>
         @endif
 
                   @if(Auth::check())
@@ -398,7 +401,7 @@
                                 <div class="col-12 col-md-6 col-lg-4">
                                   <div class="product-card d-flex align-items-start p-3 shadow-sm rounded gap-3 flex-nowrap">
                                     <div class="product-image">
-                                      ${food.discount ? `<div class="discount-badge">-${food.discount}%</div>` : ''}
+                                    
                                       <a href="${food.image ? food.image : '#'}" class="glightbox">
                                         <img src="${food.image ? food.image : '#'}" class="img-fluid rounded" alt="" />
                                       </a>
@@ -451,7 +454,7 @@
                   <div class="col-12 col-md-6 col-lg-4">
                     <div class="product-card d-flex align-items-start p-2 shadow-sm rounded">
                       <div class="product-image me-3">
-                        <div class="discount-badge">-{{ $food->discount }}%</div>
+                        
                         <a href="{{ $food->image ? asset($food->image) : $food->image }}" class="glightbox">
                           <img src="{{ $food->image ? asset($food->image) : $food->image }}" alt="" class="img-fluid rounded">
                         </a>
@@ -515,6 +518,24 @@
                     </div>
                 </div>
             </div>
+          @if(Auth::check())
+                <div class="form-group mt-2">
+                    <div class="form-group d-flex align-items-center gap-2">
+                      <label for="user_points" class="mb-0">Your Points</label>
+                      <input type="text" id="user_points" class="form-control form-control-sm bg-warning text-white" style="width: 80px;" value="{{ number_format(Auth::user()->points ?? 0, 1) }}" readonly>
+                  </div>
+
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="usePointsCheckbox">
+                        <label class="form-check-label" for="usePointsCheckbox">Use my points for this order</label>
+                    </div>
+                    <input type="hidden" id="auth_user" value="1">
+                    <input type="hidden" id="user_available_points" value="{{ number_format(Auth::user()->points, 2, '.', '') }}">
+                </div>
+            @else
+                <input type="hidden" id="auth_user" value="0">
+                <input type="hidden" id="user_available_points" value="0">
+            @endif
 
             </div>
             <div class="modal-footer">
@@ -532,7 +553,23 @@
       }
       </style>
 
+        <script>
+          $(document).ready(function () {
+            $(document).on('change', '#usePointsCheckbox', function () {
+                updateOrderCards();
+            });
 
+            $('#orderModal').on('shown.bs.modal', function () {
+                updateOrderCards();
+
+                const userPoints = parseFloat($('#user_available_points').val()) || 0;
+                if (userPoints <= 0) {
+                    $('#usePointsCheckbox').prop('disabled', true);
+                }
+            });
+        });
+
+        </script>
           <script>
              let orders = [];
             $(document).on('click', '.add-to-cart', function () {
@@ -584,46 +621,60 @@
                 }, 1000);
             });
 
-            function updateOrderCards() {
-                let html = '';
-                let total = 0;
-                orders.forEach((item, index) => {
-                    const subtotal = item.price * item.quantity;
-                    total += subtotal;
-                    html += `
-                        <div class="col-12 mb-2" data-index="${index}">
-                          <div class="card shadow-sm p-2 d-flex flex-row align-items-start">
+         function updateOrderCards() {
+            let html = '';
+            let total = 0;
+
+            orders.forEach((item, index) => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+
+                html += `
+                    <div class="col-12 mb-2" data-index="${index}">
+                        <div class="card shadow-sm p-2 d-flex flex-row align-items-start">
                             <img src="${item.image}" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #ccc;">
                             <div class="flex-grow-1" style="font-size: 13px;">
-                              <div class="d-flex justify-content-between">
-                                <div><strong>${item.name}</strong></div>
-                                <div>Size: ${item.size}</div>
-                              </div>
-                              <div class="d-flex justify-content-between">
-                                <div>Price: ₱ ${item.price.toFixed(2)}</div>
-                                <div>Flavor: ${item.flavor}</div>
-                              </div>
-                              <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                  <label class="me-2 mb-0">Qty:</label>
-                                  <input type="number" class="form-control quantity-input form-control-sm" value="${item.quantity}" min="1" style="width: 70px;">
+                                <div class="d-flex justify-content-between">
+                                    <div><strong>${item.name}</strong></div>
+                                    <div>Size: ${item.size}</div>
                                 </div>
-                                <div style="border: 1px solid #ccc; background-color: #d4edda; color: black; padding: 5px 10px; border-radius: 5px;">
-                                  <strong> ₱ ${subtotal.toFixed(2)}</strong>
+                                <div class="d-flex justify-content-between">
+                                    <div>Price: ₱ ${item.price.toFixed(2)}</div>
+                                    <div>Flavor: ${item.flavor}</div>
                                 </div>
-                              </div>
-                              <div class="text-end">
-                                <button class="btn btn-danger btn-sm remove-item mt-1">Remove</button>
-                              </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <label class="me-2 mb-0">Qty:</label>
+                                        <input type="number" class="form-control quantity-input form-control-sm" value="${item.quantity}" min="1" style="width: 70px;">
+                                    </div>
+                                    <div style="border: 1px solid #ccc; background-color: #d4edda; color: black; padding: 5px 10px; border-radius: 5px;">
+                                        <strong> ₱ ${subtotal.toFixed(2)}</strong>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <button class="btn btn-danger btn-sm remove-item mt-1">Remove</button>
+                                </div>
                             </div>
-                          </div>
                         </div>
-                    `;
-                });
-                $('#orderCardsContainer').html(html);
-                $('#orderTotal').text(total.toFixed(2));
-                updateCartCount();
+                    </div>
+                `;
+            });
+
+            const isAuth = $('#auth_user').val() == '1';
+            const usePoints = $('#usePointsCheckbox').is(':checked');
+            const userPoints = parseFloat($('#user_available_points').val()) || 0;
+
+            let discountedTotal = total;
+            if (isAuth && usePoints && userPoints > 0) {
+                discountedTotal = total - userPoints;
+                if (discountedTotal < 0) discountedTotal = 0;
             }
+
+            $('#orderCardsContainer').html(html);
+            $('#orderTotal').text(discountedTotal.toFixed(2));
+            updateCartCount();
+        }
+
 
             $(document).on('change', '.quantity-input', function () {
                 const index = $(this).closest('.col-12').data('index');
@@ -648,6 +699,8 @@
                 }
                 const tableNo = $('#table_no').val(); 
                 const orderType = $('input[name="order_type"]:checked').val(); 
+                const usePoints = $('#usePointsCheckbox').is(':checked');
+                const usedPoints = usePoints ? parseFloat($('#user_available_points').val()) : 0;
                 $.ajax({
                     url: '/submit-order',  
                     method: 'POST',
@@ -655,13 +708,17 @@
                         orders: orders,
                         table_no: tableNo,
                         order_type: orderType,
+                        used_points: usedPoints,
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
                         window.location.href = response.redirect_url;
                     },
                     error: function() {
-                        alert('Failed to submit order.');
+                          Swal.fire({
+                          title: 'Please select Dine In or Take Out',
+                          icon: 'warning',
+                      });
                     }
                 });
             });

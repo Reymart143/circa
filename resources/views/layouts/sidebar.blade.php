@@ -60,16 +60,17 @@
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                     </a>
                     <ul>
-                        <li>
-                            <a href="login.html">
+                           <li class="{{ Request::is('reports/salesreport') ? 'mm-active' : '' }}">
+                            <a href="{{ route('reports/salesreport') }}"  class="{{ Request::is('reports/salesreport') ? 'mm-active' : '' }}">
                                 <i class="metismenu-icon"></i> <i class="fa fa-users"> Sales Report</i> 
                             </a>
                         </li>
-                         <li>
-                            <a href="login.html">
-                                <i class="metismenu-icon"></i> <i class="fa fa-users"> Payment History</i> 
+                           <li class="{{ Request::is('reports/paymenthistory') ? 'mm-active' : '' }}">
+                            <a href="{{ route('reports/paymenthistory') }}"  class="{{ Request::is('reports/paymenthistory') ? 'mm-active' : '' }}">
+                                 <i class="metismenu-icon"></i> <i class="fa fa-users"> Payment History</i> 
                             </a>
                         </li>
+                        
                     </ul>
                 </li>
              
