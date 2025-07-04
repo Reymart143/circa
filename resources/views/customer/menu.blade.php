@@ -51,7 +51,7 @@
     font-size: 0.85rem;
     z-index: 10;
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    pointer-events: none; /* So the badge doesn’t interfere with clicks */
+    pointer-events: none;
 }
 
 /* Zoom and border color on hover */
@@ -150,13 +150,10 @@
       
 
     </div>
-       <button class="btn btn-warning position-relative" style="font-weight: bold; padding: 10px 20px; margin-right:2%" data-bs-toggle="modal" data-bs-target="#orderModal" id="viewOrderButton">
-          View Order
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCountBadge" style="display: none;">
-              0
-          </span>
-      </button>
-   
+
+    
+     
+     <a class="btn-getstarted" href="/login" style="margin-right:2%">Login</a>
   </header>
 
   <main class="main">
@@ -192,15 +189,25 @@
                     Hi , <small>Guest</small> 
                 </span>
                  <a href="/ordertime" class="btn btn-secondary" style="margin-right:5mm"  >
-                      <i class="fa fa-clock me-1" ></i> 
+                      <i class="fa fa-clock me-1" > </i> 
                     </a>
         @endif
+                        
+               {{-- <div class="d-flex justify-content-center justify-content-md-end align-items-center flex-wrap"> --}}
+                <button class="btn btn-warning position-relative me-2" style="font-weight: bold;" data-bs-toggle="modal" data-bs-target="#orderModal" id="viewOrderButton">
+                    View Order
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCountBadge" style="display: none;">
+                        0
+                    </span>
+                </button>
 
-                  @if(Auth::check())
-            
-                    
-                 <button id="logoutBtn" class="btn btn-danger" style="font-weight: bold; padding: 10px 20px; margin-right:2%"><i class="fa fa-sign-out-alt"></i></button>
-               
+                @if(Auth::check())
+                    <button id="logoutBtn" class="btn btn-danger" style="font-weight: bold;margin-right:4mm">
+                        <i class="fa fa-sign-out-alt"></i>
+                    </button>
+        
+              </div>
+
 
                                                                 
                   <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -496,27 +503,77 @@
               <div id="orderCardsContainer" class="row gy-3"></div>
               <h5 class="text-end mt-3" >Total: ₱ <span id="orderTotal" style="border: 1px solid #ccc; background-color: #107a29; color: rgb(255, 255, 255); padding: 5px 10px; border-radius: 5px;">0.00</span></h5>
               <div class="row">
-                <div class="form-group col-md-6">
-                    <label for="table_no">Your Table Number?</label>
-                    <select name="table_no" id="table_no" class="form-control">
-                        <option value="">Select table</option>
-                        @for ($i = 1; $i <= 6; $i++)
-                            <option value="{{ $i }}">{{ $i }}</option>
-                        @endfor
-                    </select>
+                
+             <div class="form-group col-md-6">
+                <label>Dine Option</label><br>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="order_type" id="dine_in" value="0">
+                    <label class="form-check-label" for="dine_in">Dine In</label>
                 </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="order_type" id="take_out" value="1">
+                    <label class="form-check-label" for="take_out">Take Out</label>
+                </div>
+            </div>
 
-                <div class="form-group col-md-6">
-                    <label>Dine Option</label><br>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="order_type" id="dine_in" value="0">
-                        <label class="form-check-label" for="dine_in">Dine In</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="order_type" id="take_out" value="1">
-                        <label class="form-check-label" for="take_out">Take Out</label>
-                    </div>
-                </div>
+              <div class="form-group col-md-6" id="table_no_wrapper">
+                  <label for="table_no">Your Table Number?</label>
+                  <select name="table_no" id="table_no" class="form-control">
+                      <option value="">Select table</option>
+                      @for ($i = 1; $i <= 6; $i++)
+                          <option value="{{ $i }}">{{ $i }}</option>
+                      @endfor
+                  </select>
+              </div>
+
+              <script>
+              document.addEventListener("DOMContentLoaded", function () {
+                  const dineIn = document.getElementById('dine_in');
+                  const takeOut = document.getElementById('take_out');
+                  const tableNo = document.getElementById('table_no');
+                  const tableWrapper = document.getElementById('table_no_wrapper');
+
+                  function updateTableNoField() {
+                      if (takeOut.checked) {
+                          tableNo.innerHTML = '<option value="0" selected>0</option>';
+                          tableWrapper.style.display = 'none';
+                      } else {
+                          tableWrapper.style.display = 'block';
+
+                          fetch('/get-available-tables')
+                              .then(response => {
+                                  if (!response.ok) {
+                                      throw new Error('Network response was not ok');
+                                  }
+                                  return response.json();
+                              })
+                              .then(data => {
+                                  let options = '<option value="">Select table</option>';
+                                  if (data.length === 0) {
+                                      options += '<option disabled>No available tables today</option>';
+                                  } else {
+                                      data.forEach(num => {
+                                          options += `<option value="${num}">${num}</option>`;
+                                      });
+                                  }
+                                  tableNo.innerHTML = options;
+                              })
+                              .catch(error => {
+                                  console.error('Error fetching table numbers:', error);
+                                  tableNo.innerHTML = '<option disabled>Error loading tables</option>';
+                              });
+                      }
+                  }
+
+                  dineIn.addEventListener('change', updateTableNoField);
+                  takeOut.addEventListener('change', updateTableNoField);
+
+                  updateTableNoField(); // initial check
+              });
+              </script>
+
+
+
             </div>
           @if(Auth::check())
                 <div class="form-group mt-2">
@@ -714,6 +771,7 @@
                     success: function(response) {
                         window.location.href = response.redirect_url;
                     },
+                 
                     error: function() {
                           Swal.fire({
                           title: 'Please select Dine In or Take Out',

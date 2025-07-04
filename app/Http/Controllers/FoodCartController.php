@@ -48,10 +48,9 @@ class FoodCartController extends Controller
         $orders = $request->input('orders');
        
         $table_no = $request->input('table_no'); 
+
         $order_type = $request->input('order_type');
-        if($order_type == null){
-            return response()->json(['error'=> 'Please select an order type.'],400);
-        }
+        
         if (Auth::check()) {
             $user = User::find(Auth::id());
             $user_id = $user->id;
@@ -114,6 +113,8 @@ class FoodCartController extends Controller
                 'updated_at'      => now(),
             ]);
         }
+        DB::table('table_numbers')->where('table_no',$table_no)->update(['status'=> 1]);
+        
         return response()->json([
             'redirect_url' => route('yourorders', ['order_no' => $order_no,'table_no' => $table_no])
         ]);

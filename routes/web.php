@@ -13,6 +13,7 @@ use App\Http\Controllers\CashierController;
 use App\Http\Controllers\KitchenController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\FoodCartController;
+use App\Http\Controllers\TableNumberController;
 
     //view Login Page
     Route::get('/', function () {
@@ -23,8 +24,17 @@ use App\Http\Controllers\FoodCartController;
     });
     Route::get('/login', function () {
         if (Auth::check()) {
-            return redirect()->route('Dashboard');
+            $role = Auth::user()->role;
+
+            if ($role == 1) {
+                return redirect()->route('Dashboard');
+            } elseif ($role == 0) {
+                return redirect()->route('menu'); 
+            } elseif ($role == 2) {
+                return redirect()->route('cashier'); 
+            }
         }
+
         return view('auth.login');
     })->name('login');
     //Register
@@ -65,7 +75,12 @@ use App\Http\Controllers\FoodCartController;
         Route::post('/product/update', [ProductController::class, 'updateproduct'])->name('product/update');
         Route::delete('product.delete/{id}', [ProductController::class, 'softDelete'])->name('product.delete');
         Route::post('/product/update-status', [ProductController::class, 'updateStatus'])->name('product.updateStatus');
-
+        //table number 
+        Route::get('/tableno', [TableNumberController::class, 'index'])->name('tableno');
+        Route::post('/table_no.store', [TableNumberController::class, 'add_tableno']);
+        Route::get('/tableno/edit/{id}', [TableNumberController::class, 'edit_tableno']);
+        Route::post('/tableno/update', [TableNumberController::class, 'update_tableno'])->name('tableno/update');
+        Route::delete('tableno.delete/{id}', [TableNumberController::class, 'softDeletetableno'])->name('tableno.delete');
     });
     //Order 
     Route::get('/orders/orders', [OrderController::class, 'orders'])->name('orders/orders');
@@ -93,6 +108,7 @@ use App\Http\Controllers\FoodCartController;
     Route::get('/kitchen/orders', [KitchenController::class, 'fetchOrders']);
     Route::post('/kitchen/update-status', [KitchenController::class, 'updateStatus']);
     Route::post('/kitchen/set-timer', [KitchenController::class, 'setTimer']);
+    Route::get('/get-available-tables', [KitchenController::class, 'getAvailableTables']);
     //Customer View
     Route::get('/circa',[CustomerController::class,'homepage']);
     Route::get('/menu',[CustomerController::class,'menu'])->name('menu');
@@ -106,3 +122,5 @@ use App\Http\Controllers\FoodCartController;
     //Reports 
      Route::get('/reports/salesreport', [OrderController::class, 'salesreport'])->name('reports/salesreport');
      Route::get('/reports/paymenthistory', [OrderController::class, 'paymenthistory'])->name('reports/paymenthistory');
+    //table number 
+    

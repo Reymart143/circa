@@ -47,7 +47,11 @@
                         <i class="metismenu-icon fa fa-list"></i> Food Management
                     </a>
                 </li>
-                 
+                   <li>
+                    <a href="{{ route('tableno') }}" class="{{ Request::is('tableno') ? 'mm-active' : '' }}">
+                        <i class="metismenu-icon fa fa-clipboard-list"></i> Table Number
+                    </a>
+                </li>
                 
                   <li>
                     <a href="{{ route('orders/orders') }}" class="{{ Request::is('orders/orders') ? 'mm-active' : '' }}">

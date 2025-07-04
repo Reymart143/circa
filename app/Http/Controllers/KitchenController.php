@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kitchen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Models\TableNumber;
 class KitchenController extends Controller
 {
     /**
@@ -46,16 +47,32 @@ class KitchenController extends Controller
 
         return response()->json($grouped);
     }
-public function updateStatus(Request $request)
-{
-    $order = Kitchen::find($request->id);
-    if ($order) {
+    public function updateStatus(Request $request)
+    {
+        $order = Kitchen::find($request->id);
+
+        if (!$order) {
+            return response()->json(['success' => false]);
+        }
         Kitchen::where('order_no', $order->order_no)
             ->update(['kitchen_status' => $request->status]);
+
+        if ((int)$request->status === 4) {
+            $tableNo = $order->table_no;
+
+            $allStatusServed = Kitchen::where('table_no', $tableNo)
+                ->where('order_no', $order->order_no)
+                ->where('kitchen_status', '!=', 4)
+                ->doesntExist();
+
+            if ($allStatusServed) {
+                \DB::table('table_numbers')->where('table_no', $tableNo)->update(['status' => 0]);
+            }
+        }
+
         return response()->json(['success' => true]);
     }
-    return response()->json(['success' => false]);
-}
+
 
 
     public function setTimer(Request $request)
@@ -68,7 +85,21 @@ public function updateStatus(Request $request)
         }
         return response()->json(['success' => false]);
     }
+   public function getAvailableTables()
+    {
+        $today = Carbon::today();
 
+        $allTables = TableNumber::where('status',0)->pluck('table_no');
+
+        $blockedTables = Kitchen::whereDate('created_at', $today)
+            ->whereIn('kitchen_status', [0,1, 2, 3]) 
+            ->pluck('table_no')
+            ->unique();
+
+        $availableTables = $allTables->diff($blockedTables)->values();
+
+        return response()->json($availableTables);
+    }
 
 
     /**

@@ -63,7 +63,14 @@
         Note: Please wait for the staff to get your payment .
        <div class="container-fluid d-flex justify-content-center align-items-center" style="min-height: calc(40vh - 150px); margin-top: 50px;">
             <div class="card shadow text-center p-4" style="max-width: 90%; border: 3px solid #5c0000;">
-                <small>Table No: {{ $table_no }}</small>
+                
+                 @if($table_no == 0)
+                    <small> Take Out</small>
+                    @else
+                     <small>Table No: 
+                        {{$table_no  }}    </small>
+                    @endif
+            
                 <small>Your Order Number:</small>
                 <h1 class="fw-bold" style="font-size: clamp(30px, 8vw, 70px); color: #5c0000;">{{ $order_no }}</h1>
             </div>

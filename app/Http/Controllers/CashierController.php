@@ -26,7 +26,7 @@ class CashierController extends Controller
    public function fetchOrders()
     {
         $orders = DB::table('orders')
-            ->select('order_no', 'table_no', 'payment_status', 'user_id','order_type','pointused')  // ✅ include user_id
+            ->select('order_no', 'table_no', 'payment_status', 'user_id','order_type','pointused')  
             ->groupBy('order_no', 'table_no', 'payment_status', 'user_id','order_type','pointused')
             ->orderBy('order_no', 'desc')
             ->where('payment_status',0)
@@ -69,8 +69,8 @@ public function payorders(Request $request)
     $user_id = $request->query('user_id');
     $order_type = $request->query('order_type');
    
-    if (!$order_no || !$table_no) {
-
+    if (!$order_no) {
+      
         $lastOrder = DB::table('orders')
             ->where('order_no', 'like', 'circa%')
             ->orderBy('order_no', 'desc')
@@ -106,7 +106,7 @@ public function payorders(Request $request)
         ->where('table_no', $table_no)
         ->select('orders.food_id as product_id', 'products.product_name', 'orders.quantity', 'orders.total_price')
         ->get();
-
+  
     return view('cashier.payorder', compact('orderItems', 'order_no', 'table_no', 'categories', 'foods', 'user_id','order_type'));
 }
 

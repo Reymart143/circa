@@ -160,109 +160,217 @@
   </header>
 
   <main class="main">
-    
-    <section id="menu" class="menu section">
-    <div class="d-flex justify-content-between align-items-center" style="margin-top: -50px;margin-left:3%;margin-bottom:2%">
-        @if(Auth::check())
-            <div>
-                <span class="description-title" style="
-                    color: #9c1d14;
-                    font-size: 15px;
-                    padding: 10px 20px;
-                    background-color: #f8f9fa;
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                    border-radius: 10px;
-                ">
-                   <small><a href="/menu">View Menu</a></small> 
-                </span>
-            </div>
-            @else
-               {{-- <span class="description-title" style="
-                    color: #9c1d14;
-                    font-size: 15px;
-                    padding: 10px 20px;
-                    background-color: #f8f9fa;
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                    border-radius: 10px;
-                ">
-                    {{-- Hi , <small>Guest</small>  
-                </span> --}}
-                @endif
+ @php
+    $user = Auth::user();
+    $points = $user->points ?? 0;
+    $maxPoints = 100;
+    $percent = min(100, round(($points / $maxPoints) * 100));
 
-                  @if(Auth::check())
-              <button id="logoutBtn" class="btn btn-danger" style="font-weight: bold; padding: 10px 20px; margin-right:2%"><i class="fa fa-sign-out-alt"></i></button>
-                                                                
-                  <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
-                      @csrf
-                  </form>
-             
-              <script>
-                  document.getElementById('logoutBtn').addEventListener('click', function (e) {
-                      e.preventDefault();
-              
-                      Swal.fire({
-                          title: 'Are you sure?',
-                          text: "You will be logged out.",
-                          icon: 'warning',
-                          showCancelButton: true,
-                          confirmButtonText: 'Yes, logout',
-                          cancelButtonText: 'Cancel',
-                          reverseButtons: true,
-                          buttonsStyling: false,
-                          customClass: {
-                              confirmButton: 'btn btn-success mx-2', 
-                              cancelButton: 'btn btn-danger mx-2'    
-                          }
-                      }).then((result) => {
-                          if (result.isConfirmed) {
-                              document.getElementById('logoutForm').submit();
-                          }
-                      });
-                  });
-              </script>
-        @endif
+    $level = floor($points / $maxPoints); // Example: 85 points = Level 0, 120 = Level 1
+    $preference = \App\Models\UserPreference::first();
+    $logoPath = $preference && $preference->logo
+        ? asset($preference->logo)
+        : asset('assets/images/OroSMap.png');
+@endphp
+
+<style>
+    .profile-header {
+        background: linear-gradient(145deg, #0c1b3f, #182d59);
+        padding: 30px 20px;
+        border-bottom-left-radius: 40px;
+        border-bottom-right-radius: 40px;
+        text-align: center;
+        color: #fff;
+        position: relative;
+    }
+
+    .profile-logo {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .profile-level {
+        color: #ccc;
+        font-size: 14px;
+    }
+
+    .menu-actions {
+        position: absolute;
+        top: 20px;
+        width: 100%;
+        left: 0;
+        padding: 0 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .menu-actions a,
+    .menu-actions button {
+        font-weight: bold;
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: none;
+        font-size: 14px;
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .btn-menu {
+        background-color: #ffc107;
+        color: #1b1b1b;
+    }
+
+    .btn-menu:hover {
+        background-color: #e0b900;
+    }
+
+    .btn-logout {
+        background-color: #dc3545;
+    }
+
+    .btn-logout:hover {
+        background-color: #bb2d3b;
+    }
+
+    .points-section {
+        background-color: #fff;
+        margin-top: -30px;
+        border-radius: 30px 30px 0 0;
+        padding: 30px 20px;
+        text-align: center;
+    }
+
+    .circle-progress {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: conic-gradient(#ffc107 {{ $percent }}%, #e9ecef {{ $percent }}%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: bold;
+        margin: 20px auto;
+        color: #000;
+    }
+
+    .skills-legend {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 15px;
+    }
+
+    .legend-yellow { color: #ffc107; font-size: 14px; }
+    .legend-dark { color: #0c1b3f; font-size: 14px; }
+    .legend-light { color: #adb5bd; font-size: 14px; }
+
+    .stat-box {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 15px;
+        margin-top: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .stat-box i {
+        font-size: 24px;
+        color: #198754;
+    }
+
+    .stat-value {
+        font-size: 20px;
+        font-weight: bold;
+        color: #000;
+    }
+
+    .stat-label {
+        font-size: 14px;
+        color: #666;
+    }
+
+    @media (max-width: 768px) {
+        .menu-actions {
+            flex-direction: column;
+            gap: 10px;
+            top: 10px;
+        }
+    }
+</style>
+
+<section class="profile-header">
+    {{-- Header Actions --}}
+    <div class="menu-actions">
+        <div class="d-flex justify-content-between align-items-center px-4" style="position: absolute; top: 10px; width: 100%;">
+            <a href="/menu" class="btn btn-info fw-bold d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
+                View Menu
+            </a>
+            <button id="logoutBtn" class="btn btn-danger fw-bold d-flex align-items-center px-3 py-2 rounded-pill shadow-sm">
+                <i class="fa fa-sign-out-alt me-2"></i> Logout
+            </button>
+        </div>
+
+
+        <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
     </div>
-<div class="container my-4">
-    <div class="row justify-content-center">
-        <div class="col-12 col-sm-10 col-md-6 col-lg-4">
-            <div class="card p-3 shadow-sm rounded border-0">
-                <div class="text-center">
-                    {{-- <img src="{{ asset('path/to/default-avatar.jpg') }}" alt="User Image" 
-                         class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;"> --}}
-                    <h6 class="mb-0 fw-bold">
-                        {{ $user->f_name ?? '' }} {{ $user->l_name ?? '' }}
-                    </h6>
-                    {{-- <small class="text-muted">{{ $user->email ?? '' }}</small> --}}
-                </div>
-                {{-- Points --}}
-                <div class="d-flex align-items-center mt-4 bg-light p-2 rounded">
-                    <div class="bg-warning text-white d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px;">
-                        <i class="fa fa-star"></i>
-                    </div>
-                    <div class="ms-3">
-                        <div class="text-muted" style="font-size: 14px;">Points</div>
-                        <div class="fw-bold text-dark" style="font-size: 18px;">
-                            {{ number_format($user->points ?? 0) }}
-                        </div>
-                    </div>
-                </div>
-                {{-- Total Orders --}}
-                <div class="d-flex align-items-center mt-3 bg-light p-2 rounded">
-                    <div class="bg-success text-white d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px;">
-                        <i class="fa fa-receipt"></i>
-                    </div>
-                    <div class="ms-3">
-                        <div class="text-muted" style="font-size: 14px;">Total Orders</div>
-                        <div class="fw-bold text-dark" style="font-size: 18px;">
-                            {{ $totalOrders }}
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+    {{-- Profile --}}
+    <img src="{{ $logoPath }}" alt="Logo" class="profile-logo">
+    <h5 class="mt-2 mb-0 text-white">{{ $user->f_name ?? 'User' }} {{ $user->l_name ?? '' }}</h5>
+    {{-- <small class="profile-level">Level {{ $level }}</small> --}}
+</section>
+
+<div class="points-section">
+    <p class="text-muted mb-1 mt-2 " style="font-weight:bold">Your Points</p>
+    {{-- <p class="small text-success">+{{ rand(10, 30) }} since last week</p> --}}
+     <div class="fw-bold text-dark" style="font-size: 18px;">
+         {{ number_format($user->points ?? 0) }}
+     </div>
+    <div class="circle-progress">
+        {{-- {{ $points }} --}}
+    </div>
+
+
+    <div class="stat-box mt-4">
+        <i class="fa fa-receipt"></i>
+        <div>
+            <div class="stat-value">{{ $totalOrders }}</div>
+            <div class="stat-label">Total Orders</div>
         </div>
     </div>
-</div>       
-    </section><!-- /Menu Section -->
+</div>
+
+<script>
+    document.getElementById('logoutBtn').addEventListener('click', function (e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You will be logged out.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, logout',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'btn btn-success mx-2',
+                cancelButton: 'btn btn-danger mx-2'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('logoutForm').submit();
+            }
+        });
+    });
+</script>
 
     
   </main>
