@@ -150,10 +150,14 @@
       
 
     </div>
-
     
-     
-     <a class="btn-getstarted" href="/login" style="margin-right:2%">Login</a>
+       <button class="btn btn-warning position-relative" style="font-weight: bold; padding: 10px 20px; margin-right:2%" data-bs-toggle="modal" data-bs-target="#orderModal" id="viewOrderButton">
+          View Order
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCountBadge" style="display: none;">
+              0
+          </span>
+      </button>
+   
   </header>
 
   <main class="main">
@@ -189,25 +193,15 @@
                     Hi , <small>Guest</small> 
                 </span>
                  <a href="/ordertime" class="btn btn-secondary" style="margin-right:5mm"  >
-                      <i class="fa fa-clock me-1" > </i> 
+                      <i class="fa fa-clock me-1" ></i> 
                     </a>
         @endif
-                        
-               {{-- <div class="d-flex justify-content-center justify-content-md-end align-items-center flex-wrap"> --}}
-                <button class="btn btn-warning position-relative me-2" style="font-weight: bold;" data-bs-toggle="modal" data-bs-target="#orderModal" id="viewOrderButton">
-                    View Order
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCountBadge" style="display: none;">
-                        0
-                    </span>
-                </button>
 
-                @if(Auth::check())
-                    <button id="logoutBtn" class="btn btn-danger" style="font-weight: bold;margin-right:4mm">
-                        <i class="fa fa-sign-out-alt"></i>
-                    </button>
-        
-              </div>
-
+                  @if(Auth::check())
+            
+                    
+                 <button id="logoutBtn" class="btn btn-danger" style="font-weight: bold; padding: 10px 20px; margin-right:2%"><i class="fa fa-sign-out-alt"></i></button>
+               
 
                                                                 
                   <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
