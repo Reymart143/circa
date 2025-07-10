@@ -209,7 +209,13 @@
                     </div>
                     <div class="col-md-6">
                           <div class="upload-container">
-                                <img class="img-fluid  addimage-fit" id="addImage" src="{{ asset('assets/images/avatars/12.jpg') }}" alt="dImage">
+                                 @php
+                                    $preference = \App\Models\UserPreference::first();
+                                    $logoPath = $preference && $preference->logo
+                                        ? asset($preference->logo)
+                                        : asset('assets/images/OroSMap.png');
+                                @endphp
+                                <img class="img-fluid  addimage-fit" id="addImage" src="{{ $logoPath }}" alt="dImage">
                                 <style>
                                     .addimage-fit {
                                         width: 300px;
