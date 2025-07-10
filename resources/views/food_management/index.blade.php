@@ -67,10 +67,7 @@
                                     columns: [
                                         { data: 'product_name' },
                                         { data: 'category' },
-                                        { data: 'start_time' },
-                                        { data: 'end_time' },
                                         { data: 'price' },
-                                        { data: 'discount' },
                                         { data: 'status' },
                                         { data: 'description' },
                                         { data: 'image' }, 
@@ -89,7 +86,9 @@
                                                 ? `<span class="badge bg-success text-white ml-5" style="cursor: pointer;" onclick="updateStatus(${row.id}, 1)"><i class="fa fa-check"></i> Available</span>`
                                                 : `<span class="badge bg-danger text-white ml-5" style="cursor: pointer;" onclick="updateStatus(${row.id}, 0)"><i class="fa fa-exclamation"></i> Not Available</span>`;
 
-                                            var imagePath = '/' + row.image;
+                                            var imagePath = row.image 
+                                            ? (row.image.startsWith('http') ? row.image : '/' + row.image)
+                                            : "{{ asset('assets/images/default-image.jpg') }}";
 
                                             var card = `
                                                 <div class="col-md-3 mb-4">
@@ -99,7 +98,7 @@
                                                             <h5 class="card-title">${row.product_name}</h5>
                                                             <p class="card-text small">${row.description || ''}</p>
                                                             <p class="mb-1"><strong>Category:</strong> ${row.category}</p>
-                                                            <p class="mb-1"><strong>Availability:</strong> ${startTime} - ${endTime}</p>
+                                                           
                                                             <p class="mb-1"><strong>Price:</strong> ${price}</p>
                                                             
                                                              <p>${statusButton}</p>
@@ -244,7 +243,7 @@
                     </div>
                 </div>
 
-                <div class="form-row">
+                {{-- <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="quantity">Time Start</label>
                         <input type="time" class="form-control" id="start_time" name="start_time">
@@ -255,7 +254,7 @@
                         <input type="time" class="form-control" id="end_time" name="end_time">
                         <span id="price-error" class="text-danger" role="alert"></span>
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="form-row">
                     <div class="form-group col-md-6">
@@ -302,8 +301,8 @@
                       <form id="product_form">
                 @csrf
                 <h6 class="text-primary mt-3 mb-3"><i class="fa fa-user"></i> Product Information</h6>
-            
-                <div class="row">
+               
+               <div class="row">
                     <div class="col-md-6">
                         <div class="d-flex flex-column align-items-center justify-content-center">
                           
@@ -346,6 +345,8 @@
                             </div>
                     </div>
                 </div>
+
+
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="product_name">Product Name</label>
@@ -363,7 +364,7 @@
                     </div>
                 </div>
 
-                <div class="form-row">
+                {{-- <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="quantity">Start Time</label>
                         <input type="time" class="form-control" id="editstart_time" name="editstart_time" placeholder="Add Stock">
@@ -374,7 +375,7 @@
                         <input type="time" class="form-control" id="editend_time" name="editend_time" placeholder="Set Price">
                         <span id="price-error" class="text-danger" role="alert"></span>
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="form-row">
                     <div class="form-group col-md-6">
@@ -415,8 +416,6 @@
 
            var product_name = ($('#product_name').val() || '').trim();
             var category = ($('#category').val() || '').trim();
-            var start_time = $('#start_time').val();
-            var end_time = $('#end_time').val();
             var price = ($('#price').val() || '').trim();
             var discount = $('#discount').val();
             var description = $('#description').val();
@@ -453,14 +452,7 @@
                 $('#price').removeClass('is-invalid');
                 $('#price-error').text('');
             }
-            if (!imageFile) {
-                    Swal.fire({
-                        title: 'Image Required',
-                        text: 'Please upload an image.',
-                        icon: 'error',
-                    });
-                    return;
-            }
+       
             if (errors) {
                 Swal.fire({
                     title: 'Input Failed',
@@ -472,8 +464,6 @@
 
             var formData = new FormData();
                 formData.append('product_name', product_name);
-                formData.append('start_time', start_time);
-                formData.append('end_time', end_time);
                 formData.append('description', description);
                 formData.append('price', price);
                 formData.append('discount', discount);
@@ -494,6 +484,11 @@
                 processData: false,  
                 contentType: false,
                 success: function (response) {
+                    $('#category').val('');
+                    $('#product_name').val('');
+                    $('#price').val('');
+                    $('#description').val('');
+                     $('#image').val('');
                     Swal.fire({
                         title: 'Successfully Submitted',
                         text: 'The information has been saved.',
@@ -527,9 +522,6 @@
                         dataType: "json",
                         success: function (data) {
                            $('#editproduct_name').val(data.result.product_name);
-                            $('#editstart_time').val(data.result.start_time);
-                            $('#editend_time').val(data.result.end_time);
-                            $('#editdiscount').val(data.result.discount);
                             $('#editprice').val(data.result.price);
                             $('#editcategory').val(data.result.category);
                             $('#editdescription').val(data.result.description);
@@ -554,8 +546,6 @@
                function updateproduct(id) {
                     var product_name = $('#editproduct_name').val().trim();
                     var category = $('#editcategory').val().trim();
-                    var start_time = $('#editstart_time').val().trim();
-                    var end_time = $('#editend_time').val().trim();
                     var price = $('#editprice').val().trim();
                     var discount = $('#editdiscount').val();
                     var description = $('#editdescription').val().trim();
@@ -600,10 +590,7 @@
                     formData.append('id', id);
                     formData.append('product_name', product_name);
                     formData.append('category', category);
-                    formData.append('start_time', start_time);
-                    formData.append('end_time', end_time);
                     formData.append('price', price);
-                    formData.append('discount', discount);
                     formData.append('description', description);
                     if (imageFile) {
                         formData.append('image', imageFile);

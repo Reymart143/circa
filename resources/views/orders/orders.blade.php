@@ -95,9 +95,9 @@
                                                     name: 'payment_status',
                                                     render: data => {
                                                         if (parseInt(data) === 0) {
-                                                            return '<span class="badge badge-success">Paid</span>';
+                                                            return '<span class="badge badge-danger">Not Paid</span>';
                                                         }
-                                                        return '<span class="badge badge-danger">Not Paid</span>';
+                                                        return '<span class="badge badge-success">Paid</span>';
                                                     }
                                                 },
                                                  {

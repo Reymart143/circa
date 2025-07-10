@@ -352,92 +352,232 @@
 }
 
     </style>
-  <div class="category-wrapper px-2 mt-4">
+<div class="category-wrapper px-2 mt-4">
     <ul class="category-scroll d-flex gap-3 overflow-auto flex-nowrap">
-      <li class="category-item text-center">
-        <a href="#" class="category-tab active" data-category="all">
-          <div class="circle-tab">
-            <img src="{{ $logoPath }}" alt="All">
-          </div>
-          <small>All</small>
-        </a>
-      </li>
-      @foreach ($categories as $cat)
-        <li class="category-item text-center">
-          <a href="#" class="category-tab" data-category="{{ $cat->id }}">
-            <div class="circle-tab">
-              <img  src="{{ $logoPath }}" alt="{{ $cat->category_name }}">
-            </div>
-            <small>{{ $cat->category_name }}</small>
-          </a>
-        </li>
-      @endforeach
+        @foreach ($mainCategories as $main)
+            <li class="category-item text-center">
+                <a href="#" class="category-tab {{ $loop->first ? 'active' : '' }}" data-category="{{ $main->id }}">
+                    <div class="circle-tab">
+                        <img src="{{ $logoPath }}" alt="{{ $main->main_name }}">
+                    </div>
+                    <small>{{ $main->main_name }}</small>
+                    <br>
+                    @php
+                       $timeRange = ($main->start_time && $main->end_time)
+                          ? Carbon\Carbon::createFromFormat('H:i:s', $main->start_time)->format('g:i A') . ' - ' . Carbon\Carbon::createFromFormat('H:i:s', $main->end_time)->format('g:i A')
+                          : 'Available Anytime';
+                  @endphp
+
+                  <small style="font-size:3mm">{{ $timeRange }}</small>
+                </a>
+            </li>
+        @endforeach
     </ul>
-  </div>
+</div>
 
+<div id="product-container" class="px-3 mt-4"></div>
 
+<script>
+  $(document).ready(function () {
+    function formatTime(timeStr) {
+        if (!timeStr) return '--';
+        const [hours, minutes] = timeStr.split(':');
+        const h = parseInt(hours);
+        const m = parseInt(minutes);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const hour12 = h % 12 === 0 ? 12 : h % 12;
+        return `${hour12}:${m.toString().padStart(2, '0')} ${ampm}`;
+    }
 
-       
-        <script>
-        $(document).ready(function () {
-            $('.category-tab').on('click', function(e) {
-                e.preventDefault();
+    function bindCategoryClick() {
+        $('.category-tab').off('click').on('click', function(e) {
+            e.preventDefault();
 
-                $('.category-tab').removeClass('active show');
-                $(this).addClass('active show');
+            $('.category-tab').removeClass('active');
+            $(this).addClass('active');
 
-                const categoryId = $(this).data('category');
-                
-                $.ajax({
-                    url: `/products-by-category/${categoryId}`,
-                    method: 'GET',
-                    success: function(products) {
-                    
-                        let html = '<div class="row gy-5">';
-                        if (products.length === 0) {
-                            html += '<p>No products found in this category.</p>';
-                        } else {
-                            products.forEach(food => {
+            const mainCategoryId = $(this).data('category');
+
+            $.ajax({
+                url: `/main-category/${mainCategoryId}/categories`,
+                method: 'GET',
+                success: function(response) {
+                    let html = '';
+
+                    if (!response.data || response.data.length === 0) {
+                        html += '<p class="text-danger">No categories/products available.</p>';
+                    } else {
+                        response.data.forEach(section => {
+                            html += `<h5 class="mt-4 mb-2">${section.category}</h5>`;
+                            html += `<div class="row gy-5">`;
+
+                            section.products.forEach(food => {
+                                html += `
+                                    <div class="col-12 col-md-6 col-lg-4">
+                                      <div class="product-card d-flex align-items-start p-3 shadow-sm rounded gap-3 flex-nowrap">
+                                        <div class="product-image">
+                                          <a href="${food.image ?? '#'}" class="glightbox">
+                                            <img src="${food.image ?? '#'}" class="img-fluid rounded" alt="" />
+                                          </a>
+                                        </div>
+                                        <div class="product-info">
+                                          <h5 class="product-name mb-1">${food.product_name}</h5>
+                                          <p class="mb-1 text-muted small">${food.description || 'No Added Description'}</p>
+                                          <p class="text-danger fw-bold">₱ ${parseFloat(food.price).toFixed(2)}</p>
+                                        </div>
+                                        <button class="btn btn-primary add-to-cart" data-id="${food.id}"> + </button>
+                                      </div>
+                                    </div>`;
+                            });
+
+                            html += `</div>`;
+                        });
+                    }
+
+                    $('#product-container').html(html);
+                },
+                error: function() {
+                    alert('Failed to fetch products.');
+                }
+            });
+        });
+    }
+
+    function fetchUpdatedCategories() {
+        $.ajax({
+            url: '/main-categories',
+            method: 'GET',
+            success: function (mainCategories) {
+                const currentActive = $('.category-tab.active').data('category');
+                let html = '';
+
+                mainCategories.forEach((main, index) => {
+                    const start = main.start_time ?? '';
+                    const end = main.end_time ?? '';
+                    const activeClass = main.id == currentActive ? 'active' : '';
+
+                    let timeRange = (start && end)
+                        ? formatTime(start) + ' - ' + formatTime(end)
+                        : 'Available Anytime';
+
+                    html += `
+                        <li class="category-item text-center">
+                            <a href="#" 
+                               class="category-tab ${activeClass}" 
+                               data-category="${main.id}"
+                               data-start="${start}"
+                               data-end="${end}">
+                                <div class="circle-tab">
+                                    <img src="${logoPath}" alt="${main.main_name}">
+                                </div>
+                                <small>${main.main_name}</small><br>
+                                <small style="font-size:3mm">${timeRange}</small>
+                            </a>
+                        </li>`;
+                });
+
+                $('.category-scroll').html(html);
+
+                bindCategoryClick();
+
+                if ($(`.category-tab[data-category="${currentActive}"]`).length) {
+                    $(`.category-tab[data-category="${currentActive}"]`).trigger('click');
+                } else {
+                    $('.category-tab').first().trigger('click');
+                }
+            },
+            error: function () {
+                console.error("Failed to update main categories.");
+            }
+        });
+    }
+
+    bindCategoryClick();
+
+    $('.category-tab.active').trigger('click');
+
+    setInterval(fetchUpdatedCategories, 1000);
+});
+
+</script>
+<script> const logoPath = @json($logoPath); </script>
+{{--        
+      <script>
+$(document).ready(function () {
+    function formatTime(timeStr) {
+        if (!timeStr) return '--';
+        const [hours, minutes] = timeStr.split(':');
+        const h = parseInt(hours);
+        const m = parseInt(minutes);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const hour12 = h % 12 === 0 ? 12 : h % 12;
+        return `${hour12}:${m.toString().padStart(2, '0')} ${ampm}`;
+    }
+
+    $('.category-tab').on('click', function(e) {
+        e.preventDefault();
+
+        $('.category-tab').removeClass('active');
+        $(this).addClass('active');
+
+        const mainCategoryId = $(this).data('category');
+
+        $.ajax({
+            url: `/main-category/${mainCategoryId}/categories`,
+            method: 'GET',
+            success: function(response) {
+                let html = '';
+
+                if (!response.data || response.data.length === 0) {
+                    html += '<p class="text-danger">No categories/products available.</p>';
+                } else {
+                    response.data.forEach(section => {
+                        html += `<h5 class="mt-4 mb-2">${section.category}</h5>`;
+                        html += `<div class="row gy-5">`;
+
+                        section.products.forEach(food => {
                             html += `
                                 <div class="col-12 col-md-6 col-lg-4">
                                   <div class="product-card d-flex align-items-start p-3 shadow-sm rounded gap-3 flex-nowrap">
                                     <div class="product-image">
-                                    
-                                      <a href="${food.image ? food.image : '#'}" class="glightbox">
-                                        <img src="${food.image ? food.image : '#'}" class="img-fluid rounded" alt="" />
+                                      <a href="${food.image ?? '#'}" class="glightbox">
+                                        <img src="${food.image ?? '#'}" class="img-fluid rounded" alt="" />
                                       </a>
                                     </div>
                                     <div class="product-info">
                                       <h5 class="product-name mb-1">${food.product_name}</h5>
-                                      <p class="mb-1 text-muted small"> ${food.description}</p>
-                                      <p class="mb-1 text-muted small"><strong>Available Time:</strong> ${food.start_time || '--'} - ${food.end_time || '--'}</p>
+                                      <p class="mb-1 text-muted small">${food.description || 'No Added Description'}</p>
                                       <p class="text-danger fw-bold">₱ ${parseFloat(food.price).toFixed(2)}</p>
                                     </div>
                                     <button class="btn btn-primary add-to-cart" data-id="${food.id}"> + </button>
                                   </div>
                                 </div>
-                              `;
+                            `;
+                        });
 
+                        html += `</div>`;
+                    });
+                }
 
-                            });
-                        }
-                        html += '</div>';
-
-                        $('#product-container').html(html);
-                    },
-                    error: function() {
-                        alert('Failed to fetch products.');
-                    }
-                });
-            });
+                $('#product-container').html(html);
+            },
+            error: function() {
+                alert('Failed to fetch products.');
+            }
         });
-        </script>
+    });
+
+            const activeTab = $('.category-tab.active').data('category');
+                if (activeTab !== undefined) {
+                    $('.category-tab[data-category="' + activeTab + '"]').trigger('click');
+                }
+  });
+  </script> --}}
 
         <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
           <div class="tab-pane fade active show" id="menu-starters">
             <div class="tab-header text-center">
-              {{-- <p>Menu</p> --}}
-              {{-- <h3>Starters</h3> --}}
+       
             </div>
          <style>
             .food-fit {
@@ -449,7 +589,7 @@
             }
 
         </style>
-            <div id="product-container" class="tab-content" data-aos="fade-up" data-aos-delay="200">
+            {{-- <div id="product-container" class="tab-content" data-aos="fade-up" data-aos-delay="200">
               <div class="row gy-4">
                 @foreach ($products as $food)
                   <div class="col-12 col-md-6 col-lg-4">
@@ -463,7 +603,13 @@
                       <div class="product-info">
                         <h5 class="product-name mb-1">{{ $food->product_name }}</h5>
                         <p class="mb-1 text-muted small">{{ $food->description }}</p>
-                        <p class="mb-1 text-muted small"><strong>Available Time:</strong> {{ $food->start_time }} - {{ $food->end_time }}</p>
+                        <p class="mb-1 text-muted small">
+                          <strong>Available Time:</strong>
+                          {{ $food->start_time ? \Carbon\Carbon::parse($food->start_time)->format('g:i A') : '--' }} -
+                          {{ $food->end_time ? \Carbon\Carbon::parse($food->end_time)->format('g:i A') : '--' }}
+                        </p>
+
+
                         <p class="text-danger fw-bold">₱ {{ number_format($food->price, 2) }}</p>
                       </div>
 
@@ -473,7 +619,7 @@
                   </div>
                 @endforeach
               </div>
-            </div>
+            </div> --}}
             <style>
               @media (max-width: 576px) {
                 .modal-body table {
@@ -766,11 +912,22 @@
                         window.location.href = response.redirect_url;
                     },
                  
-                    error: function() {
-                          Swal.fire({
-                          title: 'Please select Dine In or Take Out',
-                          icon: 'warning',
-                      });
+                    error: function(xhr) {
+                        let message = 'Something went wrong.';
+
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        }
+
+                        Swal.fire({
+                            title: message,
+                            icon: 'warning',
+                            confirmButtonText: 'OK',
+                            customClass: {
+                                popup: 'responsive-swal',
+                                title: 'text-wrap',
+                            }
+                        });
                     }
                 });
             });

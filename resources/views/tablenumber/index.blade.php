@@ -332,7 +332,7 @@
                                     return '<span class="badge badge-success">Available</span>';
                                 }
                                 else{
-                                     return '<span class="badge badge-success">Not Available</span>';
+                                     return '<span class="badge badge-danger">Not Available</span>';
                                 }
                             }
                         },

@@ -9,26 +9,26 @@
             <div class="col-md-12">
                 <div class="card shadow">
                     <div id="salesReportPrintArea">
-                    <div class="card-body">
-                        <h5>SALES REPORT FOR {{ $currentYear }}</h5>
-                        <button onclick="printSalesReport()" class="btn btn-primary mb-3">
-                            <i class="fas fa-print"></i> Print Sales Report
-                        </button>
-                        <script>
-                            function printSalesReport() {
-                                var printContents = document.getElementById('salesReportPrintArea').innerHTML;
-                                var originalContents = document.body.innerHTML;
+                        <div class="card-body">
+                            <div id="sales-report-header" style="text-align: center; margin-bottom: 20px;">
+                                @php
+                                    $preference = \App\Models\UserPreference::first();
+                                    $logoPath = $preference && $preference->logo
+                                        ? asset($preference->logo)
+                                        : asset('assets/images/OroSMap.png');
+                                @endphp
 
-                                document.body.innerHTML = printContents;
-                                window.print();
+                                <div class="header-logo" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                    <img src="{{ $logoPath }}" alt="Logo" style="height: 50px; width: 50px; object-fit: cover; border-radius: 50%;">
+                                    <h2 style="margin: 0;">CIRCA EMENU EXPRESS</h2>
+                                </div>
 
-                                document.body.innerHTML = originalContents;
-                                location.reload(); // optional: reloads to restore JS bindings
-                            }
-                        </script>
+                                <h5 style="margin-top: 5px;">SALES REPORT FOR {{ $currentYear }}</h5>
+                            </div>
 
-                        
-                        <div class="table-responsive">
+                            {{-- Your report table or content goes here --}}
+                            <div>
+                               <div class="table-responsive">
                             <table class="table table-bordered text-center">
                                 <thead class="thead-dark">
                                     <tr>
@@ -79,9 +79,79 @@
 
                             </table>
                         </div>
+                            </div>
+                        </div>
+                    </div>
 
-                    </div>
-                    </div>
+                    <!-- Print Button - Hidden when printing -->
+                    <button onclick="printSalesReport()" class="btn btn-primary mb-3 no-print">
+                        <i class="fas fa-print"></i> Print Sales Report
+                    </button>
+
+                    <!-- Print Script -->
+                    <script>
+                        function printSalesReport() {
+                            const printContents = document.getElementById('salesReportPrintArea').innerHTML;
+                            const printWindow = window.open('', '', 'width=900,height=700');
+
+                            printWindow.document.write('<html><head><title>Sales Report</title>');
+                            printWindow.document.write(`
+                                <style>
+                                    body { font-family: Arial, sans-serif; padding: 20px; }
+                                    h2, h5 { text-align: center; margin: 0; }
+                                    .header-logo {
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        gap: 10px;
+                                        margin-bottom: 10px;
+                                    }
+                                    .header-logo img {
+                                        height: 50px;
+                                        width: 50px;
+                                        object-fit: cover;
+                                        border-radius: 50%;
+                                    }
+                                    table {
+                                        width: 100%;
+                                        border-collapse: collapse;
+                                        margin-top: 20px;
+                                    }
+                                    th, td {
+                                        border: 1px solid #333;
+                                        padding: 8px;
+                                        text-align: left;
+                                    }
+                                    .no-print {
+                                        display: none !important;
+                                    }
+                                </style>
+                            `);
+                            printWindow.document.write('</head><body>');
+                            printWindow.document.write(printContents);
+                            printWindow.document.write('</body></html>');
+                            printWindow.document.close();
+
+                            setTimeout(() => {
+                                printWindow.focus();
+                                printWindow.print();
+                                printWindow.close();
+                            }, 500);
+                        }
+                    </script>
+
+                    <!-- Optional: CSS for hiding buttons when printing -->
+                    <style>
+                        @media print {
+                            .no-print {
+                                display: none !important;
+                            }
+                        }
+                    </style>
+
+
+                        
+            
                 </div>
             </div>
         </div>

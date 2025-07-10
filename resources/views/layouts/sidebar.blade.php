@@ -36,12 +36,17 @@
                         <i class="metismenu-icon fa fa-laptop"></i> Dashboard
                     </a>
                 </li>
-                
-              <li>
-                    <a href="{{ route('settings/category') }}" class="{{ Request::is('settings/category') ? 'mm-active' : '' }}">
-                        <i class="metismenu-icon fa fa-layer-group"></i> Category
+                 <li>
+                    <a href="{{ route('maincategory/category') }}" class="{{ Request::is('maincategory/category') ? 'mm-active' : '' }}">
+                        <i class="metismenu-icon fa fa-layer-group"></i>Main Category
                     </a>
                 </li>
+              <li>
+                    <a href="{{ route('settings/category') }}" class="{{ Request::is('settings/category') ? 'mm-active' : '' }}">
+                        <i class="metismenu-icon fa fa-layer-group"></i>Sub Category
+                    </a>
+                </li>
+                
                 <li>
                     <a href="{{ route('product/index') }}" class="{{ Request::is('product/index') ? 'mm-active' : '' }}">
                         <i class="metismenu-icon fa fa-list"></i> Food Management
@@ -71,7 +76,7 @@
                         </li>
                            <li class="{{ Request::is('reports/paymenthistory') ? 'mm-active' : '' }}">
                             <a href="{{ route('reports/paymenthistory') }}"  class="{{ Request::is('reports/paymenthistory') ? 'mm-active' : '' }}">
-                                 <i class="metismenu-icon"></i> <i class="fa fa-users"> Payment History</i> 
+                                 <i class="metismenu-icon"></i> <i class="fa fa-users"> Transaction History</i> 
                             </a>
                         </li>
                         

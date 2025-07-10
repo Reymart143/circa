@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use App\Models\UserPreference;
 
 class ProductController extends Controller
 {
@@ -15,10 +16,9 @@ class ProductController extends Controller
     {
         if ($request->ajax()) {
             $query = DB::table('products')
-                ->select('id','product_name','start_time','end_time','description',
-                        'price','discount','category','image','status');
+                ->select('id','product_name','description',
+                        'price','category','image','status');
 
-            // ✅ Apply category filter if selected
             if (!empty($request->category)) {
                 $query->where('category', $request->category);
             }
@@ -81,12 +81,9 @@ class ProductController extends Controller
             try {
             $product = new Product();
             $product->product_name = $request->product_name;
-            $product->start_time = $request->start_time;
             $product->category = $request->category;
-            $product->end_time = $request->end_time;
             $product->price = $request->price;
             $product->description = $request->description;
-            $product->discount = $request->discount;
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
@@ -94,7 +91,12 @@ class ProductController extends Controller
                 $product->image = 'food_image/' . $filename;
             }
             else{
-                $product->image = 'No image uploaded';
+                $preference = UserPreference::first();
+                $logoPath = $preference && $preference->logo
+                    ? asset($preference->logo)
+                    : asset('assets/images/OroSMap.png');
+                        
+                $product->image = $logoPath;
             }
             $product->save();
         
@@ -136,10 +138,7 @@ class ProductController extends Controller
 
             $product->product_name = $request->product_name;
             $product->category = $request->category;
-            $product->start_time = $request->start_time;
-            $product->end_time = $request->end_time;
             $product->price = $request->price;
-            $product->discount = $request->discount;
             $product->description = $request->description;
 
             if ($request->hasFile('image')) {

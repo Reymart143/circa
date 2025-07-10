@@ -51,8 +51,15 @@ class FoodCartController extends Controller
 
         $order_type = $request->input('order_type');
         if($order_type == null){
-            return response()->json(['error' => 'Order Type not found'], 404);
+           return response()->json([
+               'message' => 'Please select Dine In or Take Out.'
+           ], 422);
         }
+        if ($order_type == 0 && empty($table_no)) {
+                return response()->json([
+                    'message' => 'Table number is required for dine-in orders.'
+                ], 422);
+            }
         if (Auth::check()) {
             $user = User::find(Auth::id());
             $user_id = $user->id;

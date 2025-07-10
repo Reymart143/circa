@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use DB;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
@@ -18,27 +19,95 @@ class CustomerController extends Controller
     {
         return view('customer.index');
     }
-    public function menu()
-    {
-        $categories = DB::table('categories')->get();
-        $products = DB::table('products')->where('status',0)->get();
-            //  dd($products,$categories );
-        return view('customer.menu',compact('products','categories'));
-    }
-    public function getProductsByCategory($categoryId)
-    {
-        if ($categoryId === 'all') {
-            $products = Product::where('status', 0)->get();
-        } else {
-            $cat = Category::where('id', $categoryId)->first();
-            if (!$cat) {
-                return response()->json(['error' => 'Category not found'], 404);
-            }
-            $products = Product::where('status', 0)->where('category', $cat->category_name)->get();
-        }
+    // public function menu()
+    // {
+    //     $categories = DB::table('categories')->get();
+    //     $products = DB::table('products')->where('status',0)->get();
+    //         //  dd($products,$categories );
+    //     return view('customer.menu',compact('products','categories'));
+    // }
+  public function menu()
+{
+    $now = Carbon::now()->format('H:i:s');
 
-        return response()->json($products);
+    // Get main categories that are visible now
+    $mainCategories = DB::table('main_categories')
+        ->where(function ($query) use ($now) {
+            $query->where(function ($q) use ($now) {
+                $q->whereNotNull('start_time')
+                    ->where('start_time', '<=', $now)
+                    ->where(function ($inner) use ($now) {
+                        $inner->whereNull('end_time')
+                              ->orWhere('end_time', '>=', $now);
+                    });
+            })
+            ->orWhereNull('start_time');
+        })->get();
+ 
+    return view('customer.menu', compact('mainCategories'));
+}
+public function getAvailableMainCategories()
+{
+    $now = \Carbon\Carbon::now()->format('H:i:s');
+
+    $mainCategories = DB::table('main_categories')
+        ->where(function ($query) use ($now) {
+            $query->where(function ($q) use ($now) {
+                $q->whereNotNull('start_time')
+                    ->where('start_time', '<=', $now)
+                    ->where(function ($inner) use ($now) {
+                        $inner->whereNull('end_time')
+                            ->orWhere('end_time', '>=', $now);
+                    });
+            })
+            ->orWhereNull('start_time');
+        })->get();
+
+    return response()->json($mainCategories);
+}
+
+    // public function getProductsByCategory($categoryId)
+    // {
+    //     if ($categoryId === 'all') {
+    //         $products = Product::where('status', 0)->get();
+    //     } else {
+    //         $cat = Category::where('id', $categoryId)->first();
+    //         if (!$cat) {
+    //             return response()->json(['error' => 'Category not found'], 404);
+    //         }
+    //         $products = Product::where('status', 0)->where('category', $cat->category_name)->get();
+    //     }
+
+    //     return response()->json($products);
+    // }
+ public function getCategoriesAndProducts($mainCategoryId)
+{
+
+    $mainCategory = DB::table('main_categories')->find($mainCategoryId);
+    $categories = DB::table('categories')
+        ->where('category_details', $mainCategoryId)
+        ->get();
+   
+    $data = [];
+    
+    foreach ($categories as $category) {
+        $products = DB::table('products')
+            ->where('category', $category->category_name)
+            ->where('status', 0)
+            ->get();
+        
+        $data[] = [
+            'category' => $category->category_name,
+            'products' => $products
+        ];
     }
+
+    return response()->json([
+        'main_category' => $mainCategory->main_name,
+        'data' => $data
+    ]);
+}
+
 
     public function userProfile(){
         $user = Auth::user();

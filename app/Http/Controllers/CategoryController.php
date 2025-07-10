@@ -42,6 +42,7 @@ class CategoryController extends Controller
      */
     public function add_category(Request $request)
     {
+
         $latestCategory = DB::table('categories')
             ->select('category_id')
             ->orderBy('category_id', 'desc')

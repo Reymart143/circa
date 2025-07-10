@@ -14,6 +14,7 @@ use App\Http\Controllers\KitchenController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\FoodCartController;
 use App\Http\Controllers\TableNumberController;
+use App\Http\Controllers\MainCategoryController;
 
     //view Login Page
     Route::get('/', function () {
@@ -68,6 +69,12 @@ use App\Http\Controllers\TableNumberController;
         Route::get('/category/edit/{id}', [CategoryController::class, 'edit_category']);
         Route::post('/category/update', [CategoryController::class, 'update_category'])->name('category/update');
         Route::delete('category.delete/{id}', [CategoryController::class, 'softDelete'])->name('category.delete');
+        //Main Category settings
+        Route::get('/maincategory/category', [MainCategoryController::class, 'index'])->name('maincategory/category');
+        Route::post('/add_maincategory', [MainCategoryController::class, 'add_maincategory']);
+        Route::get('/maincategory/edit/{id}', [MainCategoryController::class, 'edit_maincategory']);
+        Route::post('/maincategory/update', [MainCategoryController::class, 'update_maincategory'])->name('maincategory/update');
+        Route::delete('maincategory.delete/{id}', [MainCategoryController::class, 'softDeletemain'])->name('maincategory.delete');
         //product Details 
         Route::get('/product/index', [ProductController::class, 'index'])->name('product/index');
         Route::post('/product.store', [ProductController::class, 'store'])->name('product.store');
@@ -112,7 +119,10 @@ use App\Http\Controllers\TableNumberController;
     //Customer View
     Route::get('/circa',[CustomerController::class,'homepage']);
     Route::get('/menu',[CustomerController::class,'menu'])->name('menu');
-    Route::get('/products-by-category/{categoryId}', [CustomerController::class, 'getProductsByCategory']);
+    // Route::get('/products-by-category/{categoryId}', [CustomerController::class, 'getProductsByCategory']);
+    Route::get('/main-category/{id}/categories', [CustomerController::class, 'getCategoriesAndProducts']);
+    Route::get('/main-categories', [CustomerController::class, 'getAvailableMainCategories']);      
+
     Route::get('/userProfile',[CustomerController::class,'userProfile']); 
     Route::post('/add-to-cart', [FoodCartController::class, 'addToCart'])->name('cart.add');
     Route::get('/yourorders/{order_no}/{table_no}', [FoodCartController::class, 'customerorder'])->name('yourorders');

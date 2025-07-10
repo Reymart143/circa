@@ -21,18 +21,18 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h5 class="card-title mb-0">Category List</h5>
-                                <button class="btn btn-success" onclick="openModal()"><i class="fa fa-plus"></i>Add Category</button>
+                                <h5 class="card-title mb-0">Main Category List</h5>
+                                <button class="btn btn-success" onclick="openModal()"><i class="fa fa-plus"></i> Add Main Category</button>
                             </div>
                             
                             <!-- Add table-responsive class here -->
                             <div class="table-responsive">
-                                <table class="mb-0 table table-striped" id="cat_table">
+                                <table class="mb-0 table table-striped" id="maincat_table">
                                     <thead>
                                         <tr>
-                                            <th>Category ID</th>
-                                            <th>Category Name</th>
-                                            <th>Category Details (optional)</th>
+                                            <th>Main Category Name</th>
+                                            <th>Start Time</th>
+                                             <th>End Time</th>
                                             {{-- <th>Status</th> --}}
                                             <th>Action</th>
                                         </tr>
@@ -52,11 +52,11 @@
     </div>
     
     {{-- modals --}}
-    <div class="modal fade" id="addCategory" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addMainCategory" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="addCategoryLabel">Add Category</h5>
+              <h5 class="modal-title" id="addCategoryLabel">Add Main Category</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -66,35 +66,32 @@
                 @csrf
                 <div class="form-group">
                   <label for="categoryName">Category Name</label>
-                  <input type="text" class="form-control" id="category_name" name="category_name" placeholder="Enter category name">
-                  <span id="category_name-error" style="color:red" class="is-invalid" role="alert"></span>
+                  <input type="text" class="form-control" id="main_name" name="main_name" placeholder="Enter main category name">
+                  <span id="main_name-error" style="color:red" class="is-invalid" role="alert"></span>
                 </div>
-               @php
-                $mainCategories = \App\Models\MainCategory::all();
-            @endphp
-
-            <div class="form-group">
-                <label for="sub_category_details">Main Category</label>
-                <select class="form-control" id="category_details" name="category_details">
-                    <option value="">-- Select Main Category --</option>
-                    @foreach ($mainCategories as $main)
-                        <option value="{{ $main->id }}">{{ $main->main_name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-
+                 <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="quantity">Time Start</label>
+                        <input type="time" class="form-control" id="start_time" name="start_time">
+                        <span id="quantity-error" class="text-danger" role="alert"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="price">End Time</label>
+                        <input type="time" class="form-control" id="end_time" name="end_time">
+                        <span id="price-error" class="text-danger" role="alert"></span>
+                    </div>
+                </div>
               </form>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" id="subadd_cat_btn" class="btn btn-primary">Save changes</button>
+              <button type="button" id="add_cat_btn" class="btn btn-primary">Save changes</button>
             </div>
           </div>
         </div>
       </div>
       {{-- edit modal --}}
-      <div class="modal fade" id="editCategory" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
+      <div class="modal fade" id="editMainCategory" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -108,21 +105,20 @@
                 @csrf
                 <div class="form-group">
                   <label for="categoryName">Category Name</label>
-                  <input type="text" class="form-control" id="edit_category_name" name="edit_category_name" placeholder="Enter category name">
-                  <span id="category_name-error" style="color:red" class="is-invalid" role="alert"></span>
+                  <input type="text" class="form-control" id="editmain_name" name="editmain_name" placeholder="Enter main category name">
+                  <span id="main_name-error" style="color:red" class="is-invalid" role="alert"></span>
                 </div>
-                @php
-                    $mainCategories = \App\Models\MainCategory::all();
-                @endphp
-
-                <div class="form-group">
-                <label for="category_details">Main Category</label>
-                <select class="form-control" id="edit_category_details" name="edit_category_details">
-                    <option value="">-- Select Main Category --</option>
-                    @foreach ($mainCategories as $main)
-                    <option value="{{ $main->id }}">{{ $main->main_name }}</option>
-                    @endforeach
-                </select>
+                 <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="quantity">Time Start</label>
+                        <input type="time" class="form-control" id="editstart_time" name="editstart_time">
+                        <span id="quantity-error" class="text-danger" role="alert"></span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="price">End Time</label>
+                        <input type="time" class="form-control" id="editend_time" name="editend_time">
+                        <span id="price-error" class="text-danger" role="alert"></span>
+                    </div>
                 </div>
                 
               </form>
@@ -137,26 +133,25 @@
       <script>
         function openModal(){
             $('#addCategoryLabel').html('<i class="fa fa-plus"></i> Add Category');
-            $('#addCategory').appendTo('body').modal('show');
+            $('#addMainCategory').appendTo('body').modal('show');
           
         }
-       $('#subadd_cat_btn').on('click', function (e) {
-            e.preventDefault();
+        $('#add_cat_btn').on('click', function (e) {
+            e.preventDefault(); 
 
-            var category_name = $('#category_name').val().trim();
-            var category_details = $('#category_details').val(); 
+            var main_name = $('#main_name').val().trim();
+            var start_time = $('#start_time').val(); 
+            var end_time = $('#end_time').val(); 
             var errors = false;
 
-            if (category_name === '') {
-                $('#category_name').addClass('is-invalid');
-                $('#category_name-error').text('Please input Category Name.');
+            if (main_name === '') {
+                $('#main_name').addClass('is-invalid');
+                $('#main_name-error').text('Please input Category Name.');
                 errors = true;
             } else {
-                $('#category_name').removeClass('is-invalid');
-                $('#category_name-error').text('');
+                $('#main_name').removeClass('is-invalid');
+                $('#main_name-error').text('');
             }
-           
-       
 
             if (errors) {
                 Swal.fire({
@@ -164,13 +159,14 @@
                     text: 'Please fill in all required fields.',
                     icon: 'error',
                 });
-                return;
+                return; 
             }
 
             var formData = {
                 id: $('#hidden_id').val(),
-                category_name: category_name,
-                category_details: category_details
+                main_name: main_name,
+                start_time: start_time,
+                end_time :end_time,
             };
 
             $.ajaxSetup({
@@ -181,21 +177,19 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/add_category',
+                url: '/add_maincategory', 
                 data: formData,
                 dataType: 'json',
                 success: function (response) {
-                    $('#category_name').val('');
-                    $('#category_details').val('');
-                    $('#category_details').removeClass('is-invalid');
-                    $('#category_details-error').remove();
-
+                    $('#main_name').val('');
+                     $('#start_time').val('');
+                    $('#end_time').val('');
                     Swal.fire({
                         title: 'Successfully Added Category',
-                        text: 'Successfully Added Category Settings',
+                        text: 'Successfully Added Main ',
                         icon: 'success',
                     });
-                    $('#cat_table').DataTable().ajax.reload();
+                    $('#maincat_table').DataTable().ajax.reload();
                     $('#addCategory').modal('hide');
                 },
                 error: function (xhr) {
@@ -207,24 +201,24 @@
                 }
             });
         });
-
               function editmodalcategory(id){
                     $('#edit-btn').text('Update Info');
-                    $('#editCategory').appendTo('body').modal('show');
+                    $('#editMainCategory').appendTo('body').modal('show');
                 
                     $.ajax({
-                        url: "/category/edit/" + id + "/",
+                        url: "/maincategory/edit/" + id + "/",
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
                         dataType: "json",
                         success: function (data) {
-                            $('#edit_category_name').val(data.result.category_name)
-                            $('#edit_category_details').val(data.result.category_details)
-                            $('#editLabel').html('<i class="fa fa-edit"?></i> Edit Category');
+                            $('#editmain_name').val(data.result.main_name)
+                            $('#editstart_time').val(data.result.start_time)
+                             $('#editend_time').val(data.result.end_time)
+                            $('#editLabel').html('<i class="fa fa-edit"?></i> Edit Main Category');
                             $('#edit-btn').val('Update');
                             $('#action').val('Edit');
-                            $('#editCategory').modal('show');
+                         
                         
                             $('#edit-btn').off('click').on('click', function () {
                                 updateCategory(id);
@@ -237,10 +231,11 @@
                 }
                 //update
                     function updateCategory(id) {
-                        var Categoryform = {
+                        var mainCategoryform = {
                             'id': id,
-                            'category_name': $('#edit_category_name').val(),
-                            'category_details': $('#edit_category_details').val(),
+                            'main_name': $('#editmain_name').val(),
+                            'start_time': $('#editstart_time').val(),
+                            'end_time': $('#editend_time').val(),
                         };
 
                         $.ajaxSetup({
@@ -251,17 +246,17 @@
                      
                         $.ajax({
                             type: 'post',
-                            url: '{{ route("category/update") }}',
-                            data: Categoryform,
+                            url: '{{ route("maincategory/update") }}',
+                            data: mainCategoryform,
                             dataType: 'json',
                             success: function (response) {
-                            $('#cat_table').DataTable().ajax.reload();
+                            $('#maincat_table').DataTable().ajax.reload();
                             Swal.fire({
                                 title: 'Successfully Updated',
-                                text: 'This Category Information Is Now Updated',
+                                text: 'This Main Category Information Is Now Updated',
                                 icon: 'success',
                             });
-                            $('#editCategory').modal('hide');
+                            $('#editMainCategory').modal('hide');
                             },
                             error: function (error) {
                                 Swal.fire({
@@ -305,7 +300,7 @@
                         
                         $.ajax({
                         
-                            url: "{{ url('category.delete/') }}/" + id,
+                            url: "{{ url('maincategory.delete/') }}/" + id,
                             type: 'DELETE',
                             
                             headers: {
@@ -320,7 +315,7 @@
                                     'success'
                                 ).then(() => {
 
-                                    $('#cat_table').DataTable().ajax.reload();
+                                    $('#maincat_table').DataTable().ajax.reload();
                                 });
                             },
                             error: function(xhr, status, error) {
@@ -337,35 +332,40 @@
           <script>
             
              $(document).ready(function() {
-                $('#cat_table').DataTable({
+                $('#maincat_table').DataTable({
               
                     "processing": true,
                    
                     serverSide: true,
-                    ajax: "{{ route('settings/category') }}",
+                    ajax: "{{ route('maincategory/category') }}",
 
                     columns: [
                         {
-                            data: 'category_id',
-                            name: 'category_id',
+                            data: 'main_name',
+                            name: 'main_name',
                             render: function(data) {
-                                return data ? `<button class="text-wrap btn btn-outline-warning">${data}</button>` : '<div class="text-wrap">No data</div>';
+                                return data ? `<div class="text-wrap ">${data}</div>` : '<div class="text-wrap">No data</div>';
+                            }
+                        },
+                       {
+                            data: 'start_time',
+                            name: 'start_time',
+                            render: function(data) {
+                                return data
+                                    ? `<div class="text-wrap">${formatTo12Hour(data)}</div>`
+                                    : '<div class="text-wrap">No data</div>';
                             }
                         },
                         {
-                            data: 'category_name',
-                            name: 'category_name',
+                            data: 'end_time',
+                            name: 'end_time',
                             render: function(data) {
-                                return data ? `<div class="text-wrap">${data}</div>` : '<div class="text-wrap">No data</div>';
+                                return data
+                                    ? `<div class="text-wrap">${formatTo12Hour(data)}</div>`
+                                    : '<div class="text-wrap">No data</div>';
                             }
                         },
-                        {
-                            data: 'category_details',
-                            name: 'category_details',
-                            render: function(data) {
-                                return data ? `<div class="text-wrap">${data}</div>` : '<div class="text-wrap">No data</div>';
-                            }
-                        },
+
                         // {
                         //     data: 'status',
                         //     name: 'status',
@@ -387,6 +387,16 @@
                         }
                     ]
                 });
+                function formatTo12Hour(timeStr) {
+                    if (!timeStr) return '';
+                    const [hourStr, minuteStr] = timeStr.split(':');
+                    let hour = parseInt(hourStr);
+                    const minute = parseInt(minuteStr);
+                    const ampm = hour >= 12 ? 'PM' : 'AM';
+                    hour = hour % 12 || 12; // convert to 12-hour format
+                    return `${hour}:${minute.toString().padStart(2, '0')} ${ampm}`;
+                }
+
             });
     </script>
     

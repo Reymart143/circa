@@ -9,7 +9,7 @@
         <div class="col-md-12">
         <div class="card shadow">
             <div class="card-body">
-        <h5 class="mb-3">Payment History</h5>
+        <h5 class="mb-3">Transaction History</h5>
         <div class="table-responsive">
             <table class="table table-bordered table-striped">
                 <thead class="table-dark">
@@ -41,7 +41,7 @@
                             <td class="text-right">₱ {{ number_format($payment->total_price, 2) }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="text-center">No payment history found.</td></tr>
+                        <tr><td colspan="6" class="text-center">No Transaction history found.</td></tr>
                     @endforelse
                 </tbody>
             </table>
