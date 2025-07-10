@@ -17,7 +17,7 @@ class CategoryController extends Controller
     {
         if ($request->ajax()) {
             $category = DB::table('categories as c')
-                ->leftJoin('main_categories as mc', 'c.id', '=', 'mc.id')
+                ->leftJoin('main_categories as mc', 'c.category_details', '=', 'mc.id')
                 ->select('c.id', 'c.category_name', 'c.status', 'c.category_id', 'mc.main_name as category_details')
                 ->get();
 
