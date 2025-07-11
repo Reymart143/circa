@@ -67,7 +67,7 @@
           {{-- <li><a href="#chefs">Chefs</a></li>
           <li><a href="#gallery">Gallery</a></li>
            --}}
-          <li><a href="#contact">Contact</a></li>
+          {{-- <li><a href="#contact">Contact</a></li> --}}
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -86,9 +86,9 @@
       <div class="container">
         <div class="row gy-4 justify-content-center justify-content-lg-between">
           <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
-            <h1 data-aos="fade-up">Enjoy Your Healthy<br>Delicious Food</h1>
+            <h1 data-aos="fade-up">Enjoy Our Healthy<br>Delicious Food</h1>
             <p data-aos="fade-up" data-aos-delay="100">Earn rewards with every order!
-Sign in or create your account now to start earning points.</p>
+              Sign in or create your account now to start earning points.</p>
             <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
               <a href="/menu" class="btn-get-started">Start Order</a>
 
@@ -97,7 +97,8 @@ Sign in or create your account now to start earning points.</p>
             </div>
           </div>
           <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
-            <img src="assetsUsers/img/hero-img.png" class="img-fluid animated" alt="">
+        
+             <img src="assetsUsers/img/pic3.png" class="img-fluid animated" style="border-radius:20mm" alt="">
           </div>
         </div>
       </div>
@@ -109,38 +110,56 @@ Sign in or create your account now to start earning points.</p>
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>About Us<br></h2>
-        <p><span>Learn More</span> <span class="description-title">About Us</span></p>
+        
+        <p><span></span> <span class="description-title">About Us</span></p>
       </div><!-- End Section Title -->
 
       <div class="container">
 
         <div class="row gy-4">
           <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
-            <img src="assetsUsers/img/about.jpg" class="img-fluid mb-4" alt="">
-            <div class="book-a-table">
-              <h3>Book a Table</h3>
-              <p>+1 5589 55488 55</p>
-            </div>
+            <img src="assetsUsers/img/circa-aboutus.png" class="img-fluid" alt="">
+            
           </div>
           <div class="col-lg-5" data-aos="fade-up" data-aos-delay="250">
             <div class="content ps-0 ps-lg-5">
               <p class="fst-italic">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                magna aliqua.
+                
               </p>
               <ul>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
-              </ul>
-              <p>
-                Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident
+                  <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span><strong>CUISINES:</strong> American, European, Fusion</span>
+                  </li>
+                  <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span><strong>Meal types:</strong> Breakfast, Lunch, Dinner, Brunch</span>
+                  </li>
+                  <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span><strong>Special Diets:</strong> Vegetarian friendly, Vegan options, Gluten free options</span>
+                  </li>
+                  <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span><strong>Features:</strong><br>
+                      Accepts Credit Cards,
+                      Free Wifi,
+                      Highchairs Available,
+                      Parking Available,
+                      Reservations,
+                      Seating,
+                      Serves Alcohol,
+                      Table Service,
+                      Takeout,
+                      Wheelchair Accessible
+                    </span>
+                  </li>
+                </ul>
+              <p class="text-primary">
+                   Learn How to Order in our eMenu Express System? <br>Click the video below ! 
               </p>
-
               <div class="position-relative mt-4">
-                <img src="assetsUsers/img/about-2.jpg" class="img-fluid" alt="">
+                <img src="assetsUsers/img/yt-circa.png" class="img-fluid" alt="">
                 <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
               </div>
             </div>
@@ -152,7 +171,7 @@ Sign in or create your account now to start earning points.</p>
     </section><!-- /About Section -->
 
     <!-- Why Us Section -->
-    <section id="why-us" class="why-us section light-background">
+    {{-- <section id="why-us" class="why-us section light-background">
 
       <div class="container">
 
@@ -206,7 +225,7 @@ Sign in or create your account now to start earning points.</p>
       </div>
 
     </section><!-- /Why Us Section -->
-
+ --}}
 
     <!-- Events Section -->
     <section id="events" class="events section">
@@ -241,35 +260,35 @@ Sign in or create your account now to start earning points.</p>
           </script>
           <div class="swiper-wrapper">
 
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assetsUsers/img/events-1.jpg)">
-              <h3>Custom Parties</h3>
-              <div class="price align-self-start">$99</div>
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assetsUsers/img/pic1.png)">
+              <h3>Chocolate Ice Cream</h3>
+              <div class="price align-self-start">...</div>
               <p class="description">
-                Quo corporis voluptas ea ad. Consectetur inventore sapiente ipsum voluptas eos omnis facere. Enim facilis veritatis id est rem repudiandae nulla expedita quas.
+               ...
               </p>
             </div><!-- End Event item -->
 
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assetsUsers/img/events-2.jpg)">
-              <h3>Private Parties</h3>
-              <div class="price align-self-start">$289</div>
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assetsUsers/img/pic2.png)">
+              <h3>Breakfast Combos</h3>
+              <div class="price align-self-start">...</div>
               <p class="description">
-                In delectus sint qui et enim. Et ab repudiandae inventore quaerat doloribus. Facere nemo vero est ut dolores ea assumenda et. Delectus saepe accusamus aspernatur.
+                ...
               </p>
             </div><!-- End Event item -->
 
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assetsUsers/img/events-3.jpg)">
-              <h3>Birthday Parties</h3>
-              <div class="price align-self-start">$499</div>
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assetsUsers/img/pic3.png)">
+              <h3>Macaroni Bread</h3>
+              <div class="price align-self-start">...</div>
               <p class="description">
-                Laborum aperiam atque omnis minus omnis est qui assumenda quos. Quis id sit quibusdam. Esse quisquam ducimus officia ipsum ut quibusdam maxime. Non enim perspiciatis.
+                ...
               </p>
             </div><!-- End Event item -->
 
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assetsUsers/img/events-4.jpg)">
-              <h3>Wedding Parties</h3>
-              <div class="price align-self-start">$899</div>
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(assetsUsers/img/pic4.png)">
+              <h3>Special Spaghetti</h3>
+              <div class="price align-self-start">...</div>
               <p class="description">
-                Laborum aperiam atque omnis minus omnis est qui assumenda quos. Quis id sit quibusdam. Esse quisquam ducimus officia ipsum ut quibusdam maxime. Non enim perspiciatis.
+                ...
               </p>
             </div><!-- End Event item -->
 
@@ -282,7 +301,7 @@ Sign in or create your account now to start earning points.</p>
     </section><!-- /Events Section -->
 
     <!-- Chefs Section -->
-    <section id="chefs" class="chefs section">
+    {{-- <section id="chefs" class="chefs section">
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
@@ -355,7 +374,7 @@ Sign in or create your account now to start earning points.</p>
 
       </div>
 
-    </section><!-- /Chefs Section -->
+    </section><!-- /Chefs Section --> --}}
 
   </main>
 
@@ -367,8 +386,8 @@ Sign in or create your account now to start earning points.</p>
           <i class="bi bi-geo-alt icon"></i>
           <div class="address">
             <h4>Address</h4>
-            <p>A108 Adam Street</p>
-            <p>New York, NY 535022</p>
+            <p>C.M. Recto St G/f Red Planet Hotels, Cagayan de Oro, Mindanao 9000 Philippines</p>
+
             <p></p>
           </div>
 
@@ -379,8 +398,7 @@ Sign in or create your account now to start earning points.</p>
           <div>
             <h4>Contact</h4>
             <p>
-              <strong>Phone:</strong> <span>+1 5589 55488 55</span><br>
-              <strong>Email:</strong> <span>info@example.com</span><br>
+              <strong>Phone:</strong> <span>+63 88 852 1850</span><br>
             </p>
           </div>
         </div>
@@ -390,8 +408,8 @@ Sign in or create your account now to start earning points.</p>
           <div>
             <h4>Opening Hours</h4>
             <p>
-              <strong>Mon-Sat:</strong> <span>11AM - 23PM</span><br>
-              <strong>Sunday</strong>: <span>Closed</span>
+              <strong>Monday-Sunday:</strong> <span>6:30 AM- 10:00 PM</span><br>
+
             </p>
           </div>
         </div>
@@ -410,13 +428,13 @@ Sign in or create your account now to start earning points.</p>
     </div>
 
     <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">Yummy</strong> <span>All Rights Reserved</span></p>
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">Source</strong> <span>All Rights Reserved</span></p>
       <div class="credits">
         <!-- All the links in the footer should remain intact. -->
         <!-- You can delete the links only if you've purchased the pro version. -->
         <!-- Licensing information: https://bootstrapmade.com/license/ -->
         <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a href="https://themewagon.com">ThemeWagon</a>
+        Designed by <a href="https://bootstrapmade.com/">Students</a> Distributed by <a href="">Team Students</a>
       </div>
     </div>
 

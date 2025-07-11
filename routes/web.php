@@ -132,5 +132,6 @@ use App\Http\Controllers\MainCategoryController;
     //Reports 
      Route::get('/reports/salesreport', [OrderController::class, 'salesreport'])->name('reports/salesreport');
      Route::get('/reports/paymenthistory', [OrderController::class, 'paymenthistory'])->name('reports/paymenthistory');
-    //table number 
+   //qr code
+     Route::get('/qrcode', [UserController::class, 'qrcode'])->name('qrcode');
     

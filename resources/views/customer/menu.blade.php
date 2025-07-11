@@ -109,7 +109,8 @@
 
       <a href="/circa" class="logo d-flex align-items-center me-auto me-xl-0">
       <div>
-      <h5 class="sitename" style="color:white !important">     @php
+      <h5 class="sitename" style="color:white !important">    
+         @php
                 $preference = \App\Models\UserPreference::first();
                 $logoPath = $preference && $preference->logo
                     ? asset($preference->logo)
