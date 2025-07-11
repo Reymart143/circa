@@ -433,7 +433,9 @@ $(document).ready(function() {
 
 
 <!-- Receipt Modal -->
-<div class="modal fade" id="receiptModal" tabindex="-1" aria-labelledby="receiptModalLabel" aria-hidden="true">
+<div class="modal fade" id="receiptModal" tabindex="-1"
+     aria-labelledby="receiptModalLabel" aria-hidden="true"
+     data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-sm">
     <div class="modal-content p-3" style="font-family: monospace; font-size: 14px;">
       <div class="modal-body" id="receiptContent">
@@ -500,6 +502,13 @@ $(document).ready(function() {
     `;
 
     $('#receiptContent').html(receiptHTML);
+
+
+  // ✅ Bootstrap 4: Show modal with static backdrop and no ESC close
+  $('#receiptModal').modal({
+    backdrop: 'static',
+    keyboard: false
+  });
 }
 function printReceipt() {
     let printContents = document.getElementById('receiptContent').innerHTML;

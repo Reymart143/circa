@@ -54,11 +54,11 @@
                         <div class="slick-slider">
                              <!-- Slide 3 -->
                             <div>
-                                <div class="position-relative h-100 d-flex justify-content-center align-items-center bg-sunny-morning" tabindex="-1">
-                                    <div class="slide-img-bg" style="background-image: url('../assets/images/carosel.png');"></div>
+                                <div class="position-relative h-100 d-flex justify-content-center align-items-center bg-sunny-morning " tabindex="-1">
+                                    <div class="slide-img-bg" style="background-image: url('/assetsUsers/img/pic2.png');"></div>
                                     <div class="slider-content">
-                                        <h3>POS SYSTEM</h3>
-                                        <p>Track your sales product using technology</p>
+                                        <h3>CIRCA 1850</h3>
+                                        <p>ORDER WITH US USING OUR INNOVATION TECHNOLOGY</p>
                             
                                     </div>
                                 </div>
@@ -86,7 +86,7 @@
                            
                         </div>
                     </div>
-                    <script>
+                    {{-- <script>
                         $(document).ready(function(){
                             $('.slick-slider').slick({
                                 dots: true,
@@ -98,7 +98,7 @@
                                 adaptiveHeight: true,
                             });
                         });
-                    </script>
+                    </script> --}}
                 </div>
 
                 <!-- Login Form Section -->
